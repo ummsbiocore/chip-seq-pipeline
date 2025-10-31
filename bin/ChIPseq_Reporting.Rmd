@@ -1,0 +1,1274 @@
+---
+params:
+  poweredby: "TRUE"
+  poweredbylogo: ""
+  clogo: ""
+  company_link: ""
+  company_email: ""
+  company_name: ""
+  sample_id: ""
+  host_genome:  ""
+  annotation_version: ""
+  mode: ""
+  peak_type: ""
+  total_bases: ""
+  cleaned_bases: ""
+  total_reads: ""
+  cleaned_reads: ""
+  unique_reads: ""
+  aligned_reads: ""
+  aligned_unique: ""
+  aligned_multi: ""
+  aligned_unmapped: ""
+  pairs_rate: 0
+  q20_raw_rate: 0
+  q30_raw_rate: 0
+  q20_clean_rate: 0
+  q30_clean_rate: 0
+  gc_content_raw: 0
+  gc_content_clean: 0
+  alignment_rate: 0
+  aligned_unique_rate: 0
+  aligned_multi_rate: 0
+  aligned_unmapped_rate: 0
+  peaks_identified: 0
+  peaks_len_list: 0
+  peaks_len_mean: 0
+  peaks_len_median: 0
+  peaks_len_min: 0
+  peaks_len_max: 0
+  mean_peak_signal: 0
+  mean_qval: 0
+  genes_annotated: 0
+  go_terms: 0
+  kegg_terms: 0
+  enriched_terms: 0
+  intergenic_bases: 0
+  intergenic_cnt: 0
+  intergenic_rate: 0
+  cds_exons_bases: 0
+  cds_exons_cnt: 0
+  cds_exons_rate: 0
+  utr5_exons_bases: 0
+  utr5_exons_cnt: 0
+  utr5_exons_rate: 0
+  utr3_exons_bases: 0
+  utr3_exons_cnt: 0
+  utr3_exons_rate: 0
+  tss_all_bases: 0
+  tss_all_cnt: 0
+  tss_all_rate: 0
+  tts_all_bases: 0
+  tts_all_cnt: 0
+  tts_all_rate: 0
+  introns_bases: 0
+  introns_cnt: 0
+  introns_rate: 0
+  noncoding_bases: 0
+  noncoding_cnt: 0
+  noncoding_rate: 0
+  other_bases: 0
+  other_cnt: 0
+  other_rate: 0
+  tss_up1kb_bases: 0
+  tss_up1kb_cnt: 0
+  tss_up1kb_rate: 0
+  tss_up5kb_bases: 0
+  tss_up5kb_cnt: 0
+  tss_up5kb_rate: 0
+  tss_up10kb_bases: 0
+  tss_up10kb_cnt: 0
+  tss_up10kb_rate: 0
+  tts_down1kb_bases: 0
+  tts_down1kb_cnt: 0
+  tts_down1kb_rate: 0
+  tts_down5kb_bases: 0
+  tts_down5kb_cnt: 0
+  tts_down5kb_rate: 0
+  tts_down10kb_bases: 0
+  tts_down10kb_cnt: 0
+  tts_down10kb_rate: 0
+  annot_path: "Unavailable"
+  peak_path: "Unavailable"
+  peakHeatmapPath: "Unavailable"
+  motif1Path: "Unavailable"
+  motif2Path: "Unavailable"
+  motif3Path: "Unavailable"
+  motif_path: "Unavailable"
+  bigwig_file_size: "-"
+  bigwig_file_ready: "Unavailable"
+  rmd_dir: ""
+  company_message: ""
+  analysisid: 0
+output:
+  html_document:
+    self_contained: true
+---
+
+<style>
+```{r css_styling, echo=FALSE, results='asis'}
+cat(readLines("report/style.css"), sep = "\n")
+```
+</style>
+
+
+```{r required_libraries, echo=FALSE, results='hide'}
+# load the necessary libraries
+library(knitr)
+library(readr)
+library(scales)
+library(ggplot2)
+library(dplyr)
+library(rsvg)
+library(tidyr)
+library(grid)
+library(gridExtra)
+library(kableExtra)
+library(htmltools)
+```
+
+<div class="header-section"> 
+<div class="row align-items-center"> 
+<div class="col-md-2 text-center"> 
+  <a href=`r params$company_link` target="_blank"><img src=`r params$clogo` alt="Logo" class="logo"></a> 
+</div> 
+<div class="col-md-10"> 
+  <h1 class="display-4 mb-0">ChIP-Seq Analysis</h1> 
+  <font class="lead mb-0">Comprehensive Analysis Report - `r params$sample_id`</font> <br>
+  <font> Generated: `r format(Sys.time(), "%Y-%m-%d %H:%M:%S")`</font><br>
+  <font> `r params$company_message`</font> 
+</div> 
+</div>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-light">
+<div class="container">
+<div class="collapse navbar-collapse" id="navbarNav">
+  <a href="#overview">1. Analysis<br>Overview</a>
+  <a href="#quality-control">2. Quality<br>Control</a>
+  <a href="#alignment">3. Reference<br>Genome<br>Alignment</a>
+  <a href="#peak-analysis">4. Peak<br>Analysis</a>
+  <a href="#motif-discovery">5. Motif<br>Discovery<br>and<br>Analysis</a>
+  <a href="#methods">6. Analysis<br>Methods</a>
+</div>
+</div>
+</nav>
+
+
+<div class="container">
+
+
+<!-- 1. Analysis Overview -->
+<section id="overview" class="mb-5">
+<div class="card">
+<div class="card-header">
+  <h2><span class="section-number">1</span>Analysis Overview</h2>
+</div>
+<div class="card-body">
+<div class="method-description">
+  <h6><i class="fas fa-info-circle"></i> Analysis Summary</h6>
+  <p>This comprehensive ChIP-Seq analysis processed sample <strong>`r params$sample_id`</strong> through a complete pipeline including quality control, alignment, peak calling, annotation, and functional analysis. The analysis provides insights into protein-DNA binding patterns and associated biological processes.</p>
+</div>
+<div class="row mb-4">
+<div class="col-md-3">
+<div class="stats-card">
+  <span class="stats-number">`r format(as.numeric(params$total_reads), big.mark = ",", scientific = FALSE)`</span>
+  <span class="stats-label">Total Reads</span>
+</div>
+</div>
+<div class="col-md-3">
+<div class="stats-card">
+  <span class="stats-number">`r format(as.numeric(params$alignment_rate), big.mark = ",", scientific = FALSE)`</span>
+  <span class="stats-label">Alignment Rate</span>
+</div>
+</div>
+<div class="col-md-3">
+<div class="stats-card">
+  <span class="stats-number">`r format(as.numeric(params$peaks_identified), big.mark = ",", scientific = FALSE)`</span>
+  <span class="stats-label">Peaks Identified</span>
+</div>
+</div>
+<div class="col-md-3">
+<div class="stats-card">
+  <span class="stats-number">`r format(as.numeric(params$enriched_terms), big.mark = ",", scientific = FALSE)`</span>
+  <span class="stats-label">Enriched Terms</span>
+</div>
+</div>
+</div>
+
+```{r overall_summary, echo=FALSE, results='asis', warning=FALSE, fig.height = 10, fig.width = 12, fig.align="center"}
+# Generate a plot for general overview
+reads_data <- data.frame(
+  Metric = c("Raw Reads", "Clean Reads", "Aligned Reads", "Unique Reads", "Final Peaks"),
+  Value = c(as.numeric(params$total_reads), as.numeric(params$cleaned_reads), as.numeric(params$aligned_reads), as.numeric(params$unique_reads), as.numeric(params$peaks_identified))
+)
+
+reads_data$Metric <- factor(reads_data$Metric, levels = reads_data$Metric)
+
+reads_plot <- ggplot(reads_data, aes(x = Metric, y = Value, fill = Metric)) +
+  geom_bar(stat = "identity", width = 0.75) +
+  geom_text(aes(label = scales::comma(Value)), size = 3.5, fontface = "bold", vjust = ifelse(as.numeric(reads_data$Value) <= (max(as.numeric(reads_data$Value)) / 1.2), -1.0, 2.0)) +
+  labs(title = "General Overview", x = "", y = "Count") +
+  scale_y_continuous(labels = scales::comma) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10), axis.text.y = element_text(angle = 45, size = 10), plot.title = element_text(hjust = 0.5, size = 16, face = "bold"), legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.border = element_rect(color = "black", fill = NA, linewidth = 1), panel.background = element_rect(fill = "white"))
+
+# Quality plot generation
+quality_data <- data.frame(
+  Metric = c("Proper Pairs", "Mapping Rate", "Alignment Rate", "Q30 Rate"),
+  Value = c(params$pairs_rate, params$alignment_rate, params$alignment_rate, params$q30_clean_rate)
+)
+
+quality_data$Metric <- factor(quality_data$Metric, levels = rev(quality_data$Metric))
+
+quality_plot <- ggplot(quality_data, aes(x = Metric, y = Value, fill = Metric)) +
+  geom_bar(stat = "identity", width = 0.75) +
+  geom_text(aes(label = paste0(scales::comma(Value), "%")), size = 3.5, fontface = "bold", hjust = ifelse(quality_data$Value <= (max(quality_data$Value) / 1.2), -0.2, 1.2)) +
+  coord_flip() +
+  labs(title = "Quality Metrics Overview", x = "", y = "Percentage (%)") +
+  scale_y_continuous(labels = scales::comma) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 10, margin = margin(t = 10)), axis.text.y = element_text(size = 10), plot.title = element_text(hjust = 0.5, size = 16, face = "bold"), legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.border = element_rect(color = "black", fill = NA, linewidth = 1), panel.background = element_rect(fill = "white"))
+
+# Peaks plot generation
+if (!is.null(params$peak_path) && is.character(params$peak_path) && file.exists(params$peak_path)) {
+  peaks <- read.csv(params$peak_path, stringsAsFactors = FALSE, header = FALSE, sep = "\t")
+  peaks_len <- abs(peaks$V3 - peaks$V2) + 1
+  peaks_len <- peaks_len[is.finite(peaks_len)]
+
+  if (length(peaks_len) > 0) {
+    peaks_len_min <- suppressWarnings(min(peaks_len, na.rm = TRUE))
+    peaks_len_max <- suppressWarnings(max(peaks_len, na.rm = TRUE))
+    peaks_len_mean <- suppressWarnings(mean(peaks_len, na.rm = TRUE))
+    peaks_len_median <- suppressWarnings(median(peaks_len, na.rm = TRUE))
+
+    # Safe axis breaks (avoids NA/zero "by" issues)
+    breaks <- pretty(c(peaks_len_min, peaks_len_max), n = 7)
+
+    peaks_data <- data.frame(Length = peaks_len)
+    peaks_plot <- ggplot(peaks_data, aes(x = Length)) +
+      geom_histogram(binwidth = 60, fill = "#a3f1a3", color = "black", linewidth = 0.25) +
+      labs(title = "Peak Length Distribution", x = "Peak Length (bp)", y = "Frequency") +
+      geom_vline(aes(xintercept = peaks_len_mean, color = "Mean"), linetype = "dashed", linewidth = 1) +
+      geom_vline(aes(xintercept = peaks_len_median, color = "Median"), linetype = "dashed", linewidth = 1) +
+      scale_color_manual(name = NULL, values = c("Mean" = "red", "Median" = "blue"), guide = guide_legend(direction = "horizontal", nrow = 1)) +
+      scale_x_continuous(breaks = breaks) +
+      coord_cartesian(xlim = c(peaks_len_min, peaks_len_max)) +
+      scale_y_continuous(labels = scales::comma) +
+      theme_minimal() +
+      theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.border = element_rect(color = "black", fill = NA, linewidth = 1), panel.background = element_rect(fill = "white"), legend.key.width = unit(0.2, "cm"), legend.key.height = unit(0.3, "cm"), legend.position.inside = c(0.85, 0.9), legend.background = element_rect(fill = "transparent", color = "black", linewidth = 0.25))
+  } else {
+    peaks_plot <- ggplot() +
+      theme_void() +
+      labs(title = "Peak Length Distribution") +
+      annotate("text", x = 0, y = 0, label = "Peaks file is empty/invalid; skipping peak length distribution") +
+      xlim(-1, 1) + ylim(-1, 1)
+  }
+} else {
+  peaks_plot <- ggplot() +
+    theme_void() +
+    labs(title = "Peak Length Distribution") +
+    annotate("text", x = 0, y = 0, label = "Peaks file not available; skipping peak length distribution") +
+    xlim(-1, 1) + ylim(-1, 1)
+}
+
+# Results summary plot generation
+ressum_data <- data.frame(
+  Metric = c("Peaks", "Genes", "GO Terms", "KEGG Pathways"),
+  Value = c(params$peaks_identified, params$genes_annotated, params$go_terms, params$kegg_terms)
+)
+
+ressum_data$Metric <- factor(ressum_data$Metric, levels = ressum_data$Metric)
+
+ressum_plot <- ggplot(ressum_data, aes(x = Metric, y = Value, fill = Metric)) +
+  geom_bar(stat = "identity", width = 0.75) +
+  geom_text(aes(label = scales::comma(Value)), size = 3.5, fontface = "bold", vjust = ifelse(ressum_data$Value <= (max(ressum_data$Value) / 1.2), -1.0, 2.0)) +
+  labs(title = "Results Summary", x = "", y = "Count") +
+  scale_y_continuous(labels = scales::comma) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10), axis.text.y = element_text(angle = 45, size = 10), plot.title = element_text(hjust = 0.5, size = 16, face = "bold"), legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.border = element_rect(color = "black", fill = NA, linewidth = 1), panel.background = element_rect(fill = "white"))
+
+# Combine all plots into a grid layout
+grid.arrange(reads_plot, quality_plot, peaks_plot, ressum_plot, ncol = 2, nrow = 2, top = textGrob(paste0("Quality Control Summary - ", params$sample_id), gp=gpar(fontsize=15, fontface="bold")))
+```
+
+</div>
+</div>
+</section>
+
+
+<!-- 2. Quality Control -->
+<section id="quality-control" class="mb-5">
+<div class="card">
+<div class="card-header">
+  <h2><span class="section-number">2</span>Quality Control</h2>
+</div>
+<div class="card-body">
+<div class="method-description">
+  <h6><i class="fas fa-check-circle"></i> Quality Control Methods</h6>
+  <p>Raw sequencing reads were processed using Trimmomatic and Fastx for quality assessment and trimming. This step removes low-quality bases, adapter sequences, and short reads to ensure high-quality data for downstream analysis.</p>
+<div class="parameter-list">
+  <strong>Parameters:</strong>
+  <ul>
+    <li>Adapter detection: Automatic adapter detection</li>
+    <li>Quality trimming: Front and tail trimming enabled</li>
+    <li>Length filtering: Minimum read length 30 bp</li>
+    <li>Quality threshold: Q30 score assessment</li>
+  </ul>
+</div>
+</div>
+  <h5>  Quality Control Summary</h5>
+
+```{r qc_summary, echo=FALSE, results='asis', warning=FALSE, fig.height = 10, fig.width = 12, fig.align="center"}
+# Generate a plot for read quality control summary
+reads_data <- data.frame(
+  Metric = c("Total Reads", "Cleaned Reads"),
+  Value = c(as.numeric(params$total_reads), as.numeric(params$cleaned_reads))
+)
+
+reads_data$Metric <- factor(reads_data$Metric, levels = reads_data$Metric)
+
+reads_plot <- ggplot(reads_data, aes(x = Metric, y = Value, fill = Metric)) +
+  geom_bar(stat = "identity", width = 0.75) +
+  geom_text(aes(label = scales::comma(Value)), size = 3.5, fontface = "bold", vjust = ifelse(as.numeric(reads_data$Value) <= (max(as.numeric(reads_data$Value)) / 1.2), -1.0, 2.0)) +
+  labs(title = "Read Counts", x = "", y = "Count") +
+  scale_y_continuous(labels = scales::comma) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10), axis.text.y = element_text(angle = 45, size = 10), plot.title = element_text(hjust = 0.5, size = 16, face = "bold"), legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.border = element_rect(color = "black", fill = NA, linewidth = 1), panel.background = element_rect(fill = "white"))
+
+# Generate quality score plot
+qscore_data <- data.frame(
+  Quality = c("Q20", "Q30"),
+  Raw = c(params$q20_raw_rate, params$q30_raw_rate),
+  Clean = c(params$q20_clean_rate, params$q30_clean_rate)
+)
+
+qscore_data <- qscore_data %>%
+  pivot_longer(cols = c("Raw", "Clean"), names_to = "Type", values_to = "Rate")
+
+qscore_data$Type <- factor(qscore_data$Type, levels = c("Raw", "Clean"))
+
+qscore_plot <- ggplot(qscore_data, aes(x = Quality, y = Rate, fill = Type)) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.75) +
+  geom_text(aes(label = paste0(Rate, "%")), position = position_dodge(width = 0.75), vjust = ifelse(qscore_data$Rate <= (max(qscore_data$Rate) / 1.2), -0.5, 1.5), size = 3.5, fontface = "bold") +
+  labs(title = "Quality Scores", x = "", y = "Rate (%)") +
+  scale_y_continuous(labels = scales::comma) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 10, margin = margin(t = 10)), axis.text.y = element_text(size = 10), plot.title = element_text(hjust = 0.5, size = 16, face = "bold"), legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.border = element_rect(color = "black", fill = NA, linewidth = 1), panel.background = element_rect(fill = "white"))
+
+# Generate alignment ditribution with pie plot
+align_data <- data.frame(
+  Metric = c("Unique", "Multi-mapped", "Unmapped"),
+  Value = c(params$aligned_unique_rate, params$aligned_multi_rate, params$aligned_unmapped_rate)
+)
+
+align_data$Metric <- factor(align_data$Metric, levels = align_data$Metric)
+
+align_plot <- ggplot(align_data, aes(x = "", y = Value, fill = Metric)) +
+  geom_bar(stat = "identity", width = 1) +
+  geom_text(aes(label = paste0(Metric, "\n", Value, "%")), position = position_stack(vjust = 0.5), size = 3.5, fontface = "bold") +
+  coord_polar(theta = "y", start = 0) +
+  labs(title = "Alignment Distribution (%)", fill = "Metric") +
+  theme_void() +
+  theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"), legend.position = "none")
+
+# Generate peak calling result plot
+peaks_data <- data.frame(
+  Metric = c("Peaks Identified", "Genes Annotated", "GO Terms", "KEGG Pathways"),
+  Value = c(params$peaks_identified, params$genes_annotated, params$go_terms, params$kegg_terms)
+)
+
+peaks_data$Metric <- factor(peaks_data$Metric, levels = peaks_data$Metric)
+layout <- rbind(c(1, 2), c(3))
+grid.arrange(reads_plot, qscore_plot, align_plot, layout_matrix = layout, top = textGrob(paste0("Quality Control Summary - ", params$sample_id), gp=gpar(fontsize=15, fontface="bold")))
+```
+
+  <h5>  Quality Control Statistics</h5>
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Metric</th>
+        <th>Raw Data</th>
+        <th>Clean Data</th>
+        <th>Change</th>
+      </tr>
+    </thead>
+  <tbody>
+    <tr>
+      <td>Total Reads</td>
+      <td>`r format(as.numeric(params$total_reads), big.mark = ",", scientific = FALSE)`</td>
+      <td>`r format(as.numeric(params$cleaned_reads), big.mark = ",", scientific = FALSE)`</td>
+      <td>`r paste0(round(100 * ((as.numeric(params$cleaned_reads) / as.numeric(params$total_reads)) - 1), 2), "%")`</td>
+    </tr>
+      <tr>
+        <td>Total Bases</td>
+        <td>`r format(as.numeric(params$total_bases), big.mark = ",", scientific = FALSE)`</td>
+        <td>`r format(as.numeric(params$cleaned_bases), big.mark = ",", scientific = FALSE)`</td>
+        <td>`r paste0(round(100 * ((as.numeric(params$cleaned_bases) / as.numeric(params$total_bases)) - 1), 2), "%")`</td>
+      </tr>
+      <tr>
+        <td>Q20 Rate</td>
+        <td>`r paste0(params$q20_raw_rate, "%")`</td>
+        <td>`r paste0(params$q20_clean_rate, "%")`</td>
+        <td>`r paste0(round(100 * ((params$q20_clean_rate / params$q20_raw_rate) - 1), 2),"%")`</td>
+      </tr>
+      <tr>
+        <td>Q30 Rate</td>
+        <td>`r paste0(params$q30_raw_rate, "%")`</td>
+        <td>`r paste0(params$q30_clean_rate, "%")`</td>
+        <td>`r paste0(round(100 * ((params$q30_clean_rate / params$q30_raw_rate) - 1), 2),"%")`</td>
+      </tr>
+      <tr>
+        <td>GC Content</td>
+        <td>`r paste0(params$gc_content_raw, "%")`</td>
+        <td>`r paste0(params$gc_content_clean, "%")`</td>
+        <td>`r paste0(round(params$gc_content_clean - params$gc_content_raw, 2),"%")`</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>
+</div>
+</section>
+
+
+<!-- 3. Reference Genome Alignment -->
+<section id="alignment" class="mb-5">
+<div class="card">
+<div class="card-header">
+  <h2><span class="section-number">3</span>Reference Genome Alignment</h2>
+</div>
+<div class="card-body">
+<div class="method-description">
+  <h6><i class="fas fa-dna"></i> Alignment Methods and Parameters</h6>
+  <p>Quality-filtered reads were aligned to the reference genome using Bowtie2, a fast and sensitive alignment tool optimized for sequencing data. Post-alignment processing included sorting, indexing, and duplicate removal.</p>
+<div class="parameter-list">
+  <strong>Parameters:</strong>
+  <ul>
+    <li>Aligner: Bowtie2</li>
+    <li>`r params$mode` reads: Yes</li>
+    <li>Sort and index: Samtools</li>
+  </ul>
+</div>
+</div>
+<h5>  Alignment Statistics</h5>
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Alignment Metric</th>
+        <th>Count</th>
+        <th>Percentage</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Uniquely Aligned Pairs</td>
+        <td>`r format(as.numeric(params$aligned_unique), big.mark = ",", scientific = FALSE)`</td>
+        <td>`r paste0(params$aligned_unique_rate, "%")`</td>
+      </tr> 
+      <tr>
+        <td>Multiple Aligned Pairs</td>
+        <td>`r format(as.numeric(params$aligned_multi), big.mark = ",", scientific = FALSE)`</td>
+        <td>`r paste0(params$aligned_multi_rate, "%")`</td>
+      </tr>
+      <tr>
+        <td>Unaligned Pairs</td>
+        <td>`r format(as.numeric(params$aligned_unmapped), big.mark = ",", scientific = FALSE)`</td>
+        <td>`r paste0(params$aligned_unmapped_rate, "%")`</td>
+      </tr>
+      <tr>
+        <td><strong>Overall Alignment Rate</strong></td>
+        <td><strong>`r format(sum(as.numeric(params$aligned_unique), as.numeric(params$aligned_multi)), big.mark = ",", scientific = FALSE)`</strong></td>
+        <td><strong>`r paste0(params$alignment_rate,"%")`</strong></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>
+</div>
+</section>
+
+
+<!-- 4. Peak Analysis -->
+<section id="peak-analysis" class="mb-5">
+<div class="card">
+<div class="card-header">
+  <h2><span class="section-number">4</span>Peak Analysis</h2>
+</div>
+<div class="card-body">
+<div class="method-description">
+  <h6><i class="fas fa-mountain"></i> Peak Calling and Analysis Methods</h6>
+  <p>ChIP-Seq peaks were identified using MACS3 (Model-based Analysis of ChIP-Seq) with `r params$mode` mode. Peak annotation was performed using HOMER to identify genomic features and nearby genes. Read coverage analysis and visualization were generated using deepTools.</p>
+<div class="parameter-list">
+  <strong>Peak Calling Parameters:</strong>
+  <ul>
+    <li>Peak caller: MACS3 v3.0.1</li>
+    <li>Mode: `r params$mode`</li>
+    <li>Genome: `r paste0(params$annotation_version, " (", params$host_genome, ")")`</li>
+    <li>FDR threshold: 0.05 (q-value)</li>
+    <li>Annotation tool: HOMER annotatePeaks.pl</li>
+  </ul>
+</div>
+</div>
+<h5>  Peak Statistics</h5>
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Peak Metric</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Total Peaks</td>
+        <td>`r params$peaks_identified`</td>
+      </tr>
+      <tr>
+        <td>Mean Length</td>
+        <td>`r params$peaks_len_mean`</td>
+      </tr>
+      <tr>
+        <td>Median Length</td>
+        <td>`r params$peaks_len_median`</td>
+      </tr>
+      <tr>
+        <td>Min Length</td>
+        <td>`r params$peaks_len_min`</td>
+      </tr>
+      <tr>
+        <td>Max Length</td>
+        <td>`r params$peaks_len_max`</td>
+      </tr>
+      <tr>
+        <td>Mean Signal</td>
+        <td>`r params$mean_peak_signal`</td>
+      </tr>
+      <tr>
+        <td>Mean Qvalue</td>
+        <td>`r params$mean_qval`</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<!-- Peak Analysis Visualizations -->
+<h5>  Peak Visualizations</h5>
+<h6>Peak Lengths</h6>
+<div class="row mb-4">
+<div class="col-md-12">
+<div class="text-center">
+<div class="pdf-container mb-3">
+  <p><strong>Peak Length Distribution</strong></p>
+
+```{r peak_length_dist, echo=FALSE, results='asis', fig.height = 6, fig.width = 9.6, fig.align="center"}
+
+if (!is.null(params$peak_path) && file.exists(params$peak_path)) {
+  # Peaks plot generation
+  peaks <- read.csv(params$peak_path, stringsAsFactors = FALSE, header = FALSE, sep = "\t")
+  peaks_len <- abs(peaks$V3 - peaks$V2) + 1
+  peaks_len <- peaks_len[is.finite(peaks_len)]
+
+  if (length(peaks_len) == 0) {
+    plot.new()
+    text(0.5, 0.5, "Peak file is empty/invalid; skipping peak length plot")
+  } else {
+    peaks_len_min <- suppressWarnings(min(peaks_len, na.rm = TRUE))
+    peaks_len_max <- suppressWarnings(max(peaks_len, na.rm = TRUE))
+    peaks_len_mean <- suppressWarnings(mean(peaks_len, na.rm = TRUE))
+    peaks_len_median <- suppressWarnings(median(peaks_len, na.rm = TRUE))
+
+    # Safe axis breaks (avoids NA/zero 'by' issues)
+    breaks <- pretty(c(peaks_len_min, peaks_len_max), n = 7)
+
+    peaks_data <- data.frame(Length = peaks_len)
+
+    peaks_plot <- ggplot(peaks_data, aes(x = Length)) +
+      geom_histogram(binwidth = 60, fill = "#a3f1a3", color = "black", linewidth = 0.25) +
+      labs(title = "", x = "Peak Length (bp)", y = "Frequency") +
+      geom_vline(aes(xintercept = peaks_len_mean, color = "Mean"), linetype = "dashed", linewidth = 1) +
+      geom_vline(aes(xintercept = peaks_len_median, color = "Median"), linetype = "dashed", linewidth = 1) +
+      scale_color_manual(name = NULL, values = c("Mean" = "red", "Median" = "blue"), guide = guide_legend(direction = "horizontal", nrow = 1)) +
+      scale_x_continuous(breaks = breaks) +
+      coord_cartesian(xlim = c(peaks_len_min, peaks_len_max)) +
+      scale_y_continuous(labels = scales::comma) +
+      theme_minimal() +
+      theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.border = element_rect(color = "black", fill = NA, linewidth = 1), panel.background = element_rect(fill = "white"), legend.key.width = unit(0.2, "cm"), legend.key.height = unit(0.3, "cm"), legend.position.inside = c(0.85, 0.9), legend.background = element_rect(fill = "transparent", color = "black", linewidth = 0.25))
+
+    peaks_plot
+  }
+} else {
+  plot.new()
+  text(0.5, 0.5, "Peak file not available; skipping peak length plot")
+}
+
+
+
+```
+
+  <p class="text-muted small">Peak length distribution showing the size characteristics of identified binding regions.</p>
+</div>
+</div>
+  <p class="text-muted" style="text-align: center;"><small>Distribution of ChIP-seq peak lengths showing the size characteristics of identified binding regions.</small></p>
+</div>
+</div>
+<h5>  Read Coverage Analysis</h5>
+<div class="alert alert-info">
+  <h6><i class="fas fa-info-circle"></i> deepTools Analysis Components</h6>
+  <p class="mb-0">This section presents advanced ChIP-seq visualizations and quality control metrics generated using the deepTools suite for comprehensive signal analysis.</p>
+</div>
+<h6><i class="fas fa-file-archive"></i> Coverage Tracks (BigWig Files)</h6>
+<div class="row mb-4">
+<div class="col-md-12">
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Track Type</th>
+        <th>File</th>
+        <th>Description</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Coverage Track</strong></td>
+        <td><code>`r params$sample_id`.bw</code></td>
+        <td>RPKM-normalized coverage track for genome browser visualization (`r params$bigwig_file_size`)</td>
+        <td><span class="badge bg-success">`r params$bigwig_file_ready`</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>
+</div>
+<h6><i class="fas fa-dna"></i> Transcription Start Site (TSS) Analysis</h6>
+<div>
+  <h6>TSS Profile Plot</h6>
+<div class="alert alert-warning">
+  <i class="fas fa-exclamation-triangle"></i> TSS profile plot not available.
+</div>
+</div>
+  <h6><i class="fas fa-fire"></i> Signal Intensity Heatmaps</h6>
+<div class="alert alert-info mb-3">
+  <i class="fas fa-info-circle"></i> <strong>Heatmap Visualization:</strong> These heatmaps show signal intensity patterns with enhanced display for better readability. Each row represents a genomic region, sorted by signal strength.
+</div>
+<div class="card border-success">
+<div class="card-header bg-success text-white">
+  <h6><i class="fas fa-mountain"></i> Peak Signal Heatmap</h6>
+</div>
+<div class="card-body p-2">
+<div class="heatmap-container text-center">
+  <img src=`r params$peakHeatmapPath` width="30%"/>
+</div>
+<p class="text-muted mt-2 mb-0"><small><strong>Peak Analysis:</strong> Signal intensity across all identified peaks (2kb regions ±1kb flanking), sorted by signal strength. Each row represents one peak region.</small></p>
+</div>
+</div>
+<div class="alert alert-info">
+  <h6><i class="fas fa-info-circle"></i> TSS Analysis Status</h6>
+  <p class="mb-1">TSS analysis plots are not available. This could be due to:</p>
+  <ul class="mb-0">
+    <li>deepTools analysis not completed</li>
+    <li>Insufficient annotation data</li>
+    <li>Analysis step skipped in pipeline configuration</li>
+  </ul>
+</div>
+<h6><i class="fas fa-chart-pie"></i> Genomic Feature Distribution</h6>
+<div class="row mb-4">
+<div class="col-md-8 mb-3">
+  <h6>Peak Distribution Across Genomic Features</h6>
+<div class="text-center">
+
+```{r peaks_annotation, echo=FALSE, results='asis', fig.align="center"}
+# Generate a pie chart for peak distribution across genomic features
+peaks_annotation <- data.frame(
+  Feature = c("Intergenic", "intron", "exon", "promoter-TSS", "TTS", "5' UTR", "3' UTR", "non-coding", "NA"),
+  Count = c(params$intergenic_cnt, params$introns_cnt, params$cds_exons_cnt, params$tss_all_cnt, params$tts_all_cnt, params$utr5_exons_cnt, params$utr3_exons_cnt, params$noncoding_cnt, params$other_cnt)
+)
+
+peaks_annotation$Feature <- factor(peaks_annotation$Feature, levels = peaks_annotation$Feature)
+
+peaks_annotation_plot_pie <- ggplot(peaks_annotation, aes(x = "", y = Count, fill = Feature)) +
+  geom_bar(stat = "identity", width = 1) +
+  geom_text(aes(label = paste0(Feature, "\n", scales::comma(Count))), position = position_stack(vjust = 0.5), size = 3.5, fontface = "bold") +
+  coord_polar(theta = "y", start = 0) +
+  labs(title = "Peak Distribution Across Genomic Features", fill = "Feature") +
+  theme_void() +
+  theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"), legend.position = "none")
+
+# Generate above plot with bar chart
+peaks_annotation_plot_bar <- ggplot(peaks_annotation, aes(x = Feature, y = Count, fill = Feature)) +
+  geom_bar(stat = "identity", width = 0.75) +
+  geom_text(aes(label = paste0(scales::comma(Count))), size = 3.5, fontface = "bold", vjust = ifelse(peaks_annotation$Count <= (max(peaks_annotation$Count) / 1.2), -1.0, 2.0)) +
+  labs(title = "Peak Distribution Across Genomic Features", x = "", y = "Count") +
+  scale_y_continuous(labels = scales::comma) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10), axis.text.y = element_text(angle = 45, size = 10), plot.title = element_text(hjust = 0.5, size = 16, face = "bold"), legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.border = element_rect(color = "black", fill = NA, linewidth = 1), panel.background = element_rect(fill = "white"))
+
+grid.arrange(peaks_annotation_plot_pie, peaks_annotation_plot_bar, ncol = 1, nrow = 2)
+```
+
+</div>
+  <p class="text-muted"><small>Distribution of ChIP-seq peaks across different genomic features (promoters, gene bodies, intergenic regions, etc.).</small></p>
+</div>
+<div class="col-md-4 mb-3">
+  <h6>Feature Statistics</h6>
+<div class="table-responsive">
+  <table class="table table-sm table-striped">
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th>Count</th>
+        <th>%</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Intergenic</td>
+        <td>`r format(params$intergenic_cnt, big.mark = ",", scientific = FALSE)`</td>
+        <td>`r paste0(params$intergenic_rate,"%")`</td>
+      </tr>
+      <tr>
+        <td>intron</td>
+        <td>`r format(params$introns_cnt, big.mark = ",", scientific = FALSE)`</td>
+        <td>`r paste0(params$introns_rate,"%")`</td>
+      </tr>
+      <tr>
+        <td>exon</td>
+        <td>`r format(params$cds_exons_cnt, big.mark = ",", scientific = FALSE)`</td>
+        <td>`r paste0(params$cds_exons_rate,"%")`</td>
+      </tr>
+      <tr>
+        <td>promoter-TSS</td>
+        <td>`r format(params$tss_all_cnt, big.mark = ",", scientific = FALSE)`</td>
+        <td>`r paste0(params$tss_all_rate,"%")`</td>
+      </tr>
+      <tr>
+        <td>TTS</td>
+        <td>`r format(params$tts_all_cnt, big.mark = ",", scientific = FALSE)`</td>
+        <td>`r paste0(params$tts_all_rate,"%")`</td>
+      </tr>
+      <tr>
+        <td>5' UTR</td>
+        <td>`r format(params$utr5_exons_cnt, big.mark = ",", scientific = FALSE)`</td>
+        <td>`r paste0(params$utr5_exons_rate,"%")`</td>
+      </tr>
+      <tr>
+        <td>3' UTR</td>
+        <td>`r format(params$utr3_exons_cnt, big.mark = ",", scientific = FALSE)`</td>
+        <td>`r paste0(params$utr3_exons_rate,"%")`</td>
+      </tr>
+      <tr>
+        <td>non-coding</td>
+        <td>`r format(params$noncoding_cnt, big.mark = ",", scientific = FALSE)`</td>
+        <td>`r paste0(params$noncoding_rate,"%")`</td>
+      </tr>
+      <tr>
+        <td>NA</td>
+        <td>`r format(params$other_cnt, big.mark = ",", scientific = FALSE)`</td>
+        <td>`r paste0(params$other_rate,"%")`</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>
+</div>
+<div class="alert alert-info">
+  <h6><i class="fas fa-info-circle"></i> deepTools Analysis Summary</h6>
+  <p class="mb-1"><strong>Coverage Analysis:</strong> BigWig files provide genome-wide signal tracks for visualization in genome browsers (IGV, UCSC Genome Browser).</p>
+  <p class="mb-1"><strong>TSS Analysis:</strong> Evaluates ChIP-seq signal enrichment around transcription start sites to assess promoter binding patterns.</p>
+  <p class="mb-1"><strong>Peak Analysis:</strong> Visualizes signal distribution across all identified peaks to evaluate peak quality and signal consistency.</p>
+</div>
+</div>
+</div>
+</section>
+
+
+<!-- 6. Motif Discovery and Analysis -->
+<section id="motif-discovery" class="mb-5">
+<div class="card">
+<div class="card-header">
+  <h2><span class="section-number">5</span>Motif Discovery and Analysis</h2>
+</div>
+<div class="card-body">
+<div class="method-description">
+  <h6><i class="fas fa-search"></i> Motif Discovery Methods</h6>
+  <p>De novo motif discovery was performed using HOMER findMotifsGenome.pl to identify enriched DNA sequence motifs within ChIP-Seq peaks. This analysis reveals potential transcription factor binding sites and regulatory elements.</p>
+<div class="parameter-list">
+  <strong>Motif Discovery Parameters:</strong>
+  <ul>
+    <li>Tool: HOMER findMotifsGenome.pl</li>
+    <li>Search region: ±200 bp around peak summits</li>
+    <li>Background: Genomic background sequences</li>
+    <li>Motif length: 8-15 bp (automatic optimization)</li>
+    <li>Statistical significance: p-value < 1e-12</li>
+    <li>Repeat masking: Enabled</li>
+  </ul>
+</div>
+</div>
+<div class="alert alert-info">
+  <h6><i class="fas fa-info-circle"></i> Motif Discovery Components</h6>
+  <p class="mb-0">This section presents comprehensive HOMER motif discovery results including enriched motifs, statistical analysis, and transcription factor binding site characterization.</p>
+</div>
+  <h5><i class="fas fa-chart-area"></i>  Motif Discovery Summary</h5>
+<div class="row mb-4">
+<div class="col-md-12 mb-3">
+<div class="card border-primary">
+<div class="card-header bg-primary text-white">
+  <h6 class="mb-0"><i class="fas fa-analytics"></i> Comprehensive Motif Analysis</h6>
+</div>
+<div class="card-body p-2">
+<div class="heatmap-container text-center">
+
+```{r echo=FALSE, results='asis'}
+```
+
+</div>
+<div class="row mt-3">
+<div class="col-md-6">
+  <h6><i class="fas fa-info-circle"></i> Analysis Components</h6>
+  <ul class="small">
+    <li><strong>Top Enriched Motifs:</strong> Most significantly enriched DNA sequence motifs</li>
+    <li><strong>Motif Length Distribution:</strong> Distribution of discovered motif lengths</li>
+    <li><strong>Significance Distribution:</strong> P-value distribution with significance threshold</li>
+    <li><strong>Motif Family Classification:</strong> Transcription factor family distribution</li>
+  </ul>
+</div>
+<div class="col-md-6">
+  <h6><i class="fas fa-chart-line"></i> Key Insights</h6>
+  <ul class="small">
+    <li><strong>Enrichment Scores:</strong> Higher scores indicate stronger motif enrichment</li>
+    <li><strong>Statistical Significance:</strong> P-values < 0.01 are highly significant</li>
+    <li><strong>Motif Families:</strong> Reveals active transcription factor classes</li>
+    <li><strong>Length Preferences:</strong> Shows optimal binding site lengths</li>
+  </ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+  <h5><i class="fas fa-dna"></i> Top 3 De Novo Motifs</h5>
+<div class="row mb-4">
+<div class="col-md-4 mb-3">
+<div class="card border-success">
+<div class="card-header bg-success text-white">
+  <h6 class="mb-0"><i class="fas fa-trophy"></i> Motif #1</h6>
+</div>
+<div class="card-body text-center">
+<div class="svg-container">
+
+```{r motif1, echo=FALSE, out.width='180%'}
+rmd_dir <- normalizePath(params$rmd_dir, winslash = "/", mustWork = TRUE)
+abs_png <- file.path(rmd_dir, "images", sprintf("%s_motif1.png", params$sample_id))
+dir.create(dirname(abs_png), recursive = TRUE, showWarnings = FALSE)
+if (is.character(params$motif1Path) &&
+    length(params$motif1Path) == 1 &&
+    !is.na(params$motif1Path) &&
+    nzchar(params$motif1Path) &&
+    file.exists(params$motif1Path)) {
+  rsvg::rsvg_png(params$motif1Path, abs_png)
+  rel_png <- file.path("report", "images", sprintf("%s_motif1.png", params$sample_id))
+  knitr::include_graphics(rel_png)
+} else {
+  plot.new()
+  text(0.5, 0.5, "Motif #1 not available; skipping")
+}
+```
+
+</div>
+  <p class="text-muted mt-2"><small>De novo discovered motif #1</small></p>
+</div>
+</div>
+</div>
+<div class="col-md-4 mb-3">
+<div class="card border-success">
+<div class="card-header bg-success text-white">
+  <h6 class="mb-0"><i class="fas fa-trophy"></i> Motif #2</h6>
+</div>
+<div class="card-body text-center">
+<div class="svg-container">
+
+```{r, echo=FALSE, out.width='180%'}
+rmd_dir <- normalizePath(params$rmd_dir, winslash = "/", mustWork = TRUE)
+abs_png <- file.path(rmd_dir, "images", sprintf("%s_motif2.png", params$sample_id))
+dir.create(dirname(abs_png), recursive = TRUE, showWarnings = FALSE)
+if (is.character(params$motif2Path) &&
+    length(params$motif2Path) == 1 &&
+    !is.na(params$motif2Path) &&
+    nzchar(params$motif2Path) &&
+    file.exists(params$motif2Path)) {
+  rsvg::rsvg_png(params$motif2Path, abs_png)
+  rel_png <- file.path("report", "images", sprintf("%s_motif2.png", params$sample_id))
+  knitr::include_graphics(rel_png)
+} else {
+  plot.new()
+  text(0.5, 0.5, "Motif #2 not available; skipping")
+}
+```
+
+</div>
+  <p class="text-muted mt-2"><small>De novo discovered motif #2</small></p>
+</div>
+</div>
+</div>
+<div class="col-md-4 mb-3">
+<div class="card border-success">
+<div class="card-header bg-success text-white">
+  <h6 class="mb-0"><i class="fas fa-trophy"></i> Motif #3</h6>
+</div>
+<div class="card-body text-center">
+<div class="svg-container">
+
+```{r, echo=FALSE, out.width='180%'}
+rmd_dir <- normalizePath(params$rmd_dir, winslash = "/", mustWork = TRUE)
+abs_png <- file.path(rmd_dir, "images", sprintf("%s_motif3.png", params$sample_id))
+dir.create(dirname(abs_png), recursive = TRUE, showWarnings = FALSE)
+if (is.character(params$motif3Path) &&
+    length(params$motif3Path) == 1 &&
+    !is.na(params$motif3Path) &&
+    nzchar(params$motif3Path) &&
+    file.exists(params$motif3Path)) {
+  rsvg::rsvg_png(params$motif3Path, abs_png)
+  rel_png <- file.path("report", "images", sprintf("%s_motif3.png", params$sample_id))
+  knitr::include_graphics(rel_png)
+} else {
+  plot.new()
+  text(0.5, 0.5, "Motif #3 not available; skipping")
+}
+```
+
+</div>
+  <p class="text-muted mt-2"><small>De novo discovered motif #3</small></p>
+</div>
+</div>
+</div>
+</div>
+
+  <h5><i class="fas fa-external-link-alt"></i>  HOMER Motif Discovery Results</h5>
+<div class="row mb-4">
+<div class="col-md-12">
+<div class="alert alert-success">
+  <h6><i class="fas fa-link"></i> Interactive Motif Results</h6>
+  <p class="mb-2">Detailed motif discovery results are available in interactive HTML reports:</p>
+<div class="btn-group" role="group">
+  <a href="../motifs/`r params$sample_id`_motifs/homerResults.html" target="_blank" class="btn btn-primary btn-sm"><i class="fas fa-dna"></i> De Novo Motifs</a>
+  <a href="../motifs/`r params$sample_id`_motifs/knownResults.html" target="_blank" class="btn btn-info btn-sm"><i class="fas fa-database"></i> Known Motifs</a>
+</div>
+  <p class="mt-2 mb-0"><small><i class="fas fa-info-circle"></i> Links open HOMER's interactive motif discovery reports in a new tab.</small></p>
+</div>
+</div>
+</div>
+  <h5><i class="fas fa-table"></i> Top Motifs Summary</h5>
+<div class="row mb-4">
+<div class="col-md-12">
+<div class="card border-info">
+<div class="card-header bg-info text-white">
+  <h6 class="mb-0"><i class="fas fa-list-ol"></i> Top 10 De Novo Motifs</h6>
+</div>
+<div class="card-body p-0">
+<br>
+<div class="table-responsive">
+
+```{r top10motif_tbl1, echo=FALSE, results='asis', warning=FALSE, fig.align="center"}
+if (file.exists(params$motif_path)) {
+  motif10_head_df <- suppressMessages(read_lines(params$motif_path) %>%
+    keep(~ str_starts(.x, ">")) %>%
+    str_remove("^>") %>%
+    str_split("\t", simplify = TRUE) %>%
+    as_tibble(.name_repair = "unique") %>%
+    rename(
+      `Motif Name`   = ...1,
+      AnnotationRaw  = ...2,
+      Score          = ...3,
+      LogP           = ...4,
+      Strand         = ...5,
+      Stats          = ...6
+    ) %>%
+    separate(
+      AnnotationRaw,
+      into = c("Consensus", "Motif Guess"),
+      sep = ",BestGuess:"
+    ) %>%
+    mutate(
+      Similarity = str_extract(`Motif Guess`, "(?<=\\()\\d*\\.?\\d+(?=\\))") %>% as.numeric(),
+      `Motif Guess` = str_remove(`Motif Guess`, "\\(\\d*\\.?\\d+\\)$")
+    )
+  )
+  motif10_head_df <- cbind(Rank = rownames(motif10_head_df), motif10_head_df)
+motif10_head_df <- motif10_head_df %>%
+  mutate(
+    TargetCount      = str_match(Stats, "T:(\\d*\\.?\\d+)")[, 2] %>% as.numeric(),
+    `Target (%)`     = str_match(Stats, "T:\\d*\\.?\\d+\\((\\d*\\.?\\d+)%\\)")[, 2] %>% as.numeric(),
+    BackgroundCount  = str_match(Stats, "B:(\\d*\\.?\\d+)")[, 2] %>% as.numeric(),
+    `Background (%)` = str_match(Stats, "B:\\d*\\.?\\d+\\((\\d*\\.?\\d+)%\\)")[, 2] %>% as.numeric(),
+    `P-value`        = str_match(Stats, "P:(\\S+)")[, 2] %>% as.numeric(),
+    Enrichment       = `Target (%)` / `Background (%)`,
+    Strand = dplyr::case_when(
+      Strand == 0 ~ "\\+",
+      Strand == 1 ~ "-",
+      TRUE ~ as.character(Strand)
+    )
+  )
+
+if (nrow(motif10_head_df) > 0) {
+  # Keep P-value so we can compute indices on the exact table we render
+  motif10_df_full <- motif10_head_df %>%
+    select(
+      Rank, `Motif Name`, Consensus, Score, LogP, Strand, Enrichment, `P-value`
+    ) %>%
+    arrange(as.numeric(Rank)) %>%
+    slice_head(n = 10)
+
+  # Indices for highlighting are from the printed data (not head_df)
+  sig_idx  <- which(motif10_df_full$`P-value` < 1e-10)
+  mid_idx  <- which(motif10_df_full$`P-value` >= 1e-10 & motif10_df_full$`P-value` < 1e-5)
+
+  # Build the table
+  kb <- kable(motif10_df_full, format = "html", escape = FALSE,
+              table.attr = "class='table table-striped'", row.names = FALSE) %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE) %>%
+    row_spec(0, bold = TRUE, background = "#667EEA", color = "white",
+             extra_css = "text-align: center; line-height: 30px;") %>%
+    column_spec(1:ncol(motif10_df_full), extra_css = "text-align: center;")
+
+  if (length(sig_idx)) kb <- kb %>% row_spec(sig_idx, background = "#a7f3a7")
+  if (length(mid_idx)) kb <- kb %>% row_spec(mid_idx, background = "#ffff7b")
+
+  kb
+
+  # If you don't want to show P-value in this table, you can instead:
+  # print(kb %>% column_spec(which(names(motif10_df_full) == "P-value"), width = "0px", extra_css = "display:none;"))
+} else {
+  cat("No motifs found in the specified file.")
+}
+} else {
+  cat("Motif file not found.")
+}
+```
+
+</div>
+<div class="card-footer text-muted">
+  <small><i class="fas fa-info-circle"></i> Green rows indicate highly significant motifs (p < 1e-10), yellow rows indicate significant motifs (p < 1e-5)</small>
+</div>
+</div>
+</div>
+</div>
+</div>
+  <h5><i class="fas fa-database"></i> Known Motifs Summary</h5>
+<div class="row mb-4">
+<div class="col-md-12">
+<div class="table-responsive">
+
+```{r top10motif_tbl2, echo=FALSE, results='asis', warning=FALSE, fig.align="center"}
+if (file.exists(params$motif_path)) {
+  motif10_head_df <- suppressMessages(read_lines(params$motif_path) %>%
+    keep(~ str_starts(.x, ">")) %>%
+    str_remove("^>") %>%
+    str_split("\t", simplify = TRUE) %>%
+    as_tibble(.name_repair = "unique") %>%
+    rename(
+      `Motif Name`   = ...1,
+      AnnotationRaw  = ...2,
+      Score          = ...3,
+      LogP           = ...4,
+      Strand         = ...5,
+      Stats          = ...6
+    ) %>%
+    separate(
+      AnnotationRaw,
+      into = c("Consensus", "Motif Guess"),
+      sep = ",BestGuess:"
+    ) %>%
+    mutate(
+      Similarity = str_extract(`Motif Guess`, "(?<=\\()\\d*\\.?\\d+(?=\\))") %>% as.numeric(),
+      `Motif Guess` = str_remove(`Motif Guess`, "\\(\\d*\\.?\\d+\\)$")
+    )
+  )
+  motif10_head_df <- cbind(Rank = rownames(motif10_head_df), motif10_head_df)
+  motif10_head_df <- motif10_head_df %>%
+    mutate(
+      TargetCount = str_match(Stats, "T:(\\d*\\.?\\d+)")[, 2] %>% as.numeric(),
+      `Target (%)` = str_match(Stats, "T:\\d*\\.?\\d+\\((\\d*\\.?\\d+)%\\)")[, 2] %>% as.numeric(),
+      BackgroundCount = str_match(Stats, "B:(\\d*\\.?\\d+)")[, 2] %>% as.numeric(),
+      `Background (%)` = str_match(Stats, "B:\\d*\\.?\\d+\\((\\d*\\.?\\d+)%\\)")[, 2] %>% as.numeric(),
+      `P-value` = str_match(Stats, "P:(\\S+)")[, 2] %>% as.numeric()
+    )
+  motif10_head_df <- motif10_head_df %>%
+    mutate(
+      Enrichment = `Target (%)` / `Background (%)`,
+      Strand = case_when(
+        Strand == 0 ~ "\\+",
+        Strand == 1 ~ "-",
+        TRUE ~ as.character(Strand)
+      )
+    )
+  if (length(nrow(motif10_head_df)) > 0) {
+    motif10_df <- motif10_head_df %>%
+      select(
+        Rank,
+        `Motif Guess`,
+        `P-value`,
+        `Target (%)`,
+        `Background (%)`
+      ) %>%
+      arrange(as.numeric(Rank)) %>%
+      slice_head(n = 10)
+    kable(motif10_df, format = "html", escape = FALSE, table.attr = "class='table table-striped'", row.names = FALSE) %>%
+      kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE) %>%
+      row_spec(0, bold = TRUE, background = "#667EEA", color = "white", extra_css = "text-align: center; line-height: 30px;") %>%
+      column_spec(1:ncol(motif10_df), extra_css = "text-align: center;") %>%
+      row_spec(which(motif10_df$`P-value` < 1e-10), background = "lightgreen") %>%
+      row_spec(which(motif10_df$`P-value` >= 1e-10 & motif10_df$`P-value` < 1e-05), background = "#ffff7b")
+  } else {
+    cat("No motifs found in the specified file.")
+  }
+} else {
+  cat("Motif file not found.")
+}
+```
+
+</div>
+<div class="card-footer text-muted">
+  <small><i class="fas fa-info-circle"></i> Green rows indicate highly significant motifs (p < 1e-10), yellow rows indicate significant motifs (p < 1e-5)</small>
+</div>
+</div>
+</div>
+<div class="alert alert-info">
+  <h6><i class="fas fa-info-circle"></i> Motif Discovery Summary</h6>
+  <p class="mb-1"><strong>Analysis Tool:</strong> HOMER findMotifsGenome.pl for de novo and known motif discovery</p>
+  <p class="mb-1"><strong>Search Region:</strong> ±200 bp around peak summits</p>
+  <p class="mb-0"><strong>Results:</strong> Interactive HTML reports provide detailed motif logos, position weight matrices, and enrichment statistics</p>
+</div>
+</div>
+</div>
+</section>
+
+
+<!-- 7. Analysis Methods -->
+<section id="methods" class="mb-5">
+<div class="card">
+<div class="card-header">
+  <h2><span class="section-number">6</span>Analysis Methods</h2>
+</div>
+<div class="card-body">
+<div class="row">
+<div class="col-md-6">
+  <h5>  Software and Tools</h5>
+<div class="mb-3">
+  <span class="method-badge">trimmomatic v0.40+</span>
+  <span class="method-badge">Bowtie2 v2.4+</span>
+  <span class="method-badge">SAMtools v1.15+</span>
+  <span class="method-badge">Picard v2.27+</span>
+  <span class="method-badge">MACS3 v3.0.1+</span>
+  <span class="method-badge">HOMER v4.11+</span>
+  <span class="method-badge">deepTools v3.5+</span>
+  <span class="method-badge">R clusterProfiler v4.0+</span>
+</div>
+  <h6>Analysis Pipeline Overview</h6>
+  <ol>
+    <li><strong>Quality Control:</strong> trimmomatic for adapter trimming, quality filtering, and basic statistics</li>
+    <li><strong>Read Alignment:</strong> Bowtie2 for sensitive `r params$mode` genome alignment</li>
+    <li><strong>Post-processing:</strong> SAMtools for sorting/indexing, Picard for duplicate removal</li>
+    <li><strong>Peak Calling:</strong> MACS3 for identifying statistically significant enriched regions</li>
+    <li><strong>Peak Annotation:</strong> HOMER for genomic feature annotation and gene assignment</li>
+    <li><strong>Coverage Analysis:</strong> deepTools for signal tracks and advanced visualizations</li>
+    <li><strong>Motif Discovery:</strong> HOMER for de novo transcription factor binding motif identification</li>
+    <li><strong>Report Generation:</strong> Comprehensive HTML report with interactive visualizations</li>
+  </ol>
+  <h6>Quality Control Metrics</h6>
+  <ul>
+    <li><strong>Read Quality:</strong> Q30 score assessment and base quality distribution</li>
+    <li><strong>Adapter Content:</strong> Automatic detection and removal of sequencing adapters</li>
+    <li><strong>Length Filtering:</strong> Removal of reads shorter than 30 bp</li>
+    <li><strong>Duplication Rate:</strong> Assessment and removal of PCR duplicates</li>
+  </ul>
+</div>
+<div class="col-md-6">
+  <h5>  Analysis Parameters</h5>
+  <table class="table table-sm">
+    <tbody>
+      <tr><td><strong>Pipeline Version</strong></td><td>ChIP-Seq Analysis Pipeline v2.0</td></tr>
+      <tr><td><strong>Sample Name</strong></td><td>`r params$sample_id`</td></tr>
+      <tr><td><strong>Analysis Date</strong></td><td>`r format(Sys.time(), "%Y-%m-%d %H:%M:%S")`</td></tr>
+      <tr><td><strong>Reference Genome</strong></td><td>`r params$host_genome`</td></tr>
+      <tr><td><strong>Peak Caller</strong></td><td>MACS3 (`r params$mode` mode)</td></tr>
+      <tr><td><strong>FDR Threshold</strong></td><td>0.05 (q-value)</td></tr>
+      <tr><td><strong>Annotation Tool</strong></td><td>HOMER annotatePeaks.pl</td></tr>
+    </tbody>
+  </table>
+  <h6>Peak Calling Parameters</h6>
+  <ul>
+    <li><strong>Algorithm:</strong> MACS3 Model-based Analysis</li>
+    <li><strong>Input Format:</strong> `r params$mode` BAM files</li>
+    <li><strong>Genome:</strong> `r params$host_genome`</li>
+    <li><strong>Bandwidth:</strong> 300 bp (default)</li>
+    <li><strong>Model Building:</strong> Automatic shift size detection</li>
+    <li><strong>Duplicate Filtering:</strong> Pre-processed with Picard</li>
+  </ul>
+  <h6>deepTools Visualization Parameters</h6>
+  <ul>
+    <li><strong>BigWig Generation:</strong> RPKM normalization, 10 bp bins</li>
+    <li><strong>TSS Analysis:</strong> ±2 kb around transcription start sites</li>
+    <li><strong>Peak Analysis:</strong> 2 kb peak regions with ±1 kb flanking</li>
+    <li><strong>Smoothing:</strong> 30 bp window for signal smoothing</li>
+    <li><strong>Read Extension:</strong> 150 bp fragment length estimation</li>
+  </ul>
+  <h6>Sample Information</h6>
+<div class="mb-2">
+  <span class="sample-badge">`r params$sample_id`</span>
+</div>
+  <p class="text-muted small">Analysis performed using standardized ChIP-Seq pipeline with quality control at each step.</p>
+</div>
+</div>
+<div class="row mt-4">
+<div class="col-md-12">
+  <h5>  Output File Summary</h5>
+<div class="table-responsive">
+</div>
+<div class="alert alert-info mt-3">
+  <h6><i class="fas fa-info-circle"></i> File Naming Convention</h6>
+  <p class="mb-1">All output files follow the pattern: <code>[SAMPLE_NAME]_[ANALYSIS_STEP].[EXTENSION]</code></p>
+  <p class="mb-1"><strong>Example:</strong> For sample "UUO-Trim28", peak file would be <code>UUO-Trim28_peaks.narrowPeak</code></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+
+</div>
+
+
+<!-- Footer -->
+<footer class="footer">
+<div class="container">
+<div class="row" style="padding-top: 15px; padding-bottom: 15px; width: 100%;">
+<div class="col-md-6">
+<div class="team-info">
+  <h5><i class="fas fa-users"></i> `r params$company_name` Bioinformatics Team</h5>
+  <p class="mb-2">Professional NGS Analysis Services</p>
+  <p class="mb-1"><i class="fas fa-envelope"></i> Contact: <a href="mailto:`r params$company_email`">`r params$company_email`</a></p>
+  <p class="mb-0"><i class="fas fa-globe"></i> Website: <a href="`r params$company_link`" target="_blank">`r params$company_link`</a></p>
+</div>
+</div>
+<div class="col-md-6">
+  <h5>Analysis Information</h5>
+  <p><strong>Pipeline Version:</strong> ChIP-Seq Analysis Pipeline v2.0.0</p>
+  <p><strong>Report Generated:</strong> `r format(Sys.time(), "%Y-%m-%d %H:%M:%S")`</p>
+  <p><strong>Sample:</strong> `r params$sample_id`</p>
+  <p class="mb-0"><strong>Analysis ID:</strong> `r params$analysisid`</p>
+</div>
+<div class="col-md-12 mt-3">
+
+<p class="text-center text-muted small"><img src=`r params$poweredbylogo` alt="ViaScientific Inc." width="50px" />Powered by ViaFoundry / ViaScientific, Inc.</p>
+
+
+</div>
+</div>
+</div>
+</footer>
+
+<!-- Author: Berkay Ekren | email: berkayekren@gmail.com | email2: berkayekren@viascientific.com -->

@@ -29,6 +29,10 @@ def pathChecker(input, path, type){
 if (!params.reads){params.reads = ""} 
 if (!params.mate){params.mate = ""} 
 if (!params.custom_additional_genome){params.custom_additional_genome = ""} 
+if (!params.homerdb){params.homerdb = ""} 
+if (!params.report_footer_logo){params.report_footer_logo = ""} 
+if (!params.report_header_logo){params.report_header_logo = ""} 
+if (!params.report_institute_css){params.report_institute_css = ""} 
 // Stage empty file to be used as an optional input where required
 ch_empty_file_1 = file("$baseDir/.emptyfiles/NO_FILE_1", hidden:true)
 ch_empty_file_2 = file("$baseDir/.emptyfiles/NO_FILE_2", hidden:true)
@@ -54,8 +58,13 @@ Channel
  }
 
 Channel.value(params.mate).set{g_2_1_g72_26}
-(g_2_1_g72_30,g_2_1_g72_46,g_2_1_g71_11,g_2_1_g71_16,g_2_1_g71_21,g_2_1_g71_24,g_2_0_g71_28,g_2_0_g71_31,g_2_1_g71_18,g_2_1_g71_23,g_2_1_g71_19,g_2_1_g71_20,g_2_1_g73_10,g_2_1_g73_3,g_2_0_g87_9,g_2_1_g87_23,g_2_0_g87_25,g_2_1_g74_82,g_2_0_g74_131) = [g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26]
+(g_2_1_g72_30,g_2_1_g72_46,g_2_1_g71_11,g_2_1_g71_16,g_2_1_g71_21,g_2_1_g71_24,g_2_0_g71_28,g_2_0_g71_31,g_2_1_g71_18,g_2_1_g71_23,g_2_1_g71_19,g_2_1_g71_20,g_2_1_g73_10,g_2_1_g73_3,g_2_0_g87_6,g_2_0_g87_9,g_2_1_g74_82,g_2_0_g74_131) = [g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26,g_2_1_g72_26]
 g_86_2_g78_58 = params.custom_additional_genome && file(params.custom_additional_genome, type: 'any').exists() ? file(params.custom_additional_genome, type: 'any') : ch_empty_file_1
+g_96_1_g95_2 = file(params.homerdb, type: 'any')
+g_96_0_g95_5 = file(params.homerdb, type: 'any')
+g_102_8_g_99 = params.report_footer_logo && file(params.report_footer_logo, type: 'any').exists() ? file(params.report_footer_logo, type: 'any') : ch_empty_file_9
+g_103_9_g_99 = params.report_header_logo && file(params.report_header_logo, type: 'any').exists() ? file(params.report_header_logo, type: 'any') : ch_empty_file_10
+g_108_10_g_99 = params.report_institute_css && file(params.report_institute_css, type: 'any').exists() ? file(params.report_institute_css, type: 'any') : ch_empty_file_11
 
 //* params.run_Adapter_Removal =   "no"   //* @dropdown @options:"yes","no" @show_settings:"Adapter_Removal"
 //* @style @multicolumn:{seed_mismatches, palindrome_clip_threshold, simple_clip_threshold} @condition:{Tool_for_Adapter_Removal="trimmomatic", seed_mismatches, palindrome_clip_threshold, simple_clip_threshold}, {Tool_for_Adapter_Removal="fastx_clipper", discard_non_clipped}
@@ -968,7 +977,7 @@ input:
  tuple val(name), file(reads)
 
 output:
- path '*.{html,zip}'  ,emit:g71_31_FastQCout00 
+ path '*.{html,zip}'  ,emit:g71_31_FastQCout015_g_70 
 
 when:
 (params.run_FastQC && params.run_FastQC == "yes" && params.run_Adapter_Removal && params.run_Adapter_Removal == "yes")
@@ -1324,7 +1333,7 @@ input:
 output:
  path "*/${gtf2}" ,optional:true  ,emit:g78_54_gtfFile01_g72_47 
  path "*/${genome2}" ,optional:true  ,emit:g78_54_genome10_g72_47 
- path "*/${genomeSizes2}" ,optional:true  ,emit:g78_54_genomeSizes21_g87_26 
+ path "*/${genomeSizes2}" ,optional:true  ,emit:g78_54_genomeSizes22_g74_131 
  path "*/${bed2}" ,optional:true  ,emit:g78_54_bed31_g74_134 
 
 container 'quay.io/viascientific/pipeline_base_image:1.0'
@@ -2467,6 +2476,115 @@ awk 'FNR==1 && NR!=1 {  getline; } 1 {print} ' *.tsv > ${name}.tsv
 """
 }
 
+//* autofill
+//* platform
+//* platform
+//* autofill
+
+process Overall_Summary {
+
+publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /overall_summary.tsv$/) "summary/$filename"}
+input:
+ path starSum
+ path sequentialSum
+ path adapterSum
+ path trimmerSum
+ path qualitySum
+
+output:
+ path "overall_summary.tsv" ,optional:true  ,emit:g_75_outputFileTSV011_g_99 
+
+shell:
+'''
+#!/usr/bin/env perl
+use List::Util qw[min max];
+use strict;
+use File::Basename;
+use Getopt::Long;
+use Pod::Usage;
+use Data::Dumper;
+
+my @header;
+my %all_rows;
+my @seen_cols;
+my $ID_header;
+
+chomp(my $contents = `ls *.tsv`);
+my @rawFiles = split(/[\\n]+/, $contents);
+if (scalar @rawFiles == 0){
+    exit;
+}
+my @files = ();
+# order must be in this order for chipseq pipeline: bowtie->dedup
+# rsem bam pipeline: dedup->rsem, star->dedup
+# riboseq ncRNA_removal->star
+my @order = ("adapter_removal","trimmer","quality","extractUMI","extractValid","tRAX","sequential_mapping","ncRNA_removal","bowtie","star","hisat2","tophat2", "dedup","rsem","kallisto","salmon","esat","count");
+for ( my $k = 0 ; $k <= $#order ; $k++ ) {
+    for ( my $i = 0 ; $i <= $#rawFiles ; $i++ ) {
+        if ( $rawFiles[$i] =~ /$order[$k]/ ) {
+            push @files, $rawFiles[$i];
+        }
+    }
+}
+
+print Dumper \\@files;
+##add rest of the files
+for ( my $i = 0 ; $i <= $#rawFiles ; $i++ ) {
+    push(@files, $rawFiles[$i]) unless grep{$_ == $rawFiles[$i]} @files;
+}
+print Dumper \\@files;
+
+##Merge each file according to array order
+
+foreach my $file (@files){
+        open IN,"$file";
+        my $line1 = <IN>;
+        chomp($line1);
+        ( $ID_header, my @header) = ( split("\\t", $line1) );
+        push @seen_cols, @header;
+
+        while (my $line=<IN>) {
+        chomp($line);
+        my ( $ID, @fields ) = ( split("\\t", $line) ); 
+        my %this_row;
+        @this_row{@header} = @fields;
+
+        #print Dumper \\%this_row;
+
+        foreach my $column (@header) {
+            if (! exists $all_rows{$ID}{$column}) {
+                $all_rows{$ID}{$column} = $this_row{$column}; 
+            }
+        }   
+    }
+    close IN;
+}
+
+#print for debugging
+#print Dumper \\%all_rows;
+#print Dumper \\%seen_cols;
+
+#grab list of column headings we've seen, and order them. 
+my @cols_to_print = uniq(@seen_cols);
+my $summary = "overall_summary.tsv";
+open OUT, ">$summary";
+print OUT join ("\\t", $ID_header,@cols_to_print),"\\n";
+foreach my $key ( keys %all_rows ) { 
+    #map iterates all the columns, and gives the value or an empty string. if it's undefined. (prevents errors)
+    print OUT join ("\\t", $key, (map { $all_rows{$key}{$_} // '' } @cols_to_print)),"\\n";
+}
+close OUT;
+
+sub uniq {
+    my %seen;
+    grep ! $seen{$_}++, @_;
+}
+
+'''
+
+
+}
+
 
 
 //* autofill
@@ -2483,7 +2601,7 @@ input:
 output:
  tuple val(oldname), file("${oldname}.bam")  ,emit:g73_4_merged_bams00 
  tuple val(oldname), file("*_sorted*bai")  ,emit:g73_4_bam_index11 
- tuple val(oldname), file("*_sorted*bam")  ,emit:g73_4_sorted_bam20_g87_21 
+ tuple val(oldname), file("*_sorted*bam")  ,emit:g73_4_sorted_bam20_g87_0 
 
 errorStrategy 'retry'
 maxRetries 6
@@ -2845,19 +2963,20 @@ sub makeBed {
 //* params.run_Remove_Multimappers_with_Samtools =  "no"  //* @dropdown @options:"yes","no" @show_settings:"Remove_Multimappers"
 
 
-process ChIP_Module_Remove_Multimappers_with_Samtools {
+process ChIP_Module_Samtools_Remove_Multimappers {
 
+publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /bam\/${name}.bam$/) "samtools_deduplication/$filename"}
 input:
  tuple val(name), file(bam)
 
 output:
- tuple val(name), file("bam/${name}.bam")  ,emit:g87_21_mapped_reads00_g87_22 
+ tuple val(name), file("bam/${name}.bam")  ,emit:g87_0_mapped_reads00_g87_1 
 
 when:
 params.run_Remove_Multimappers_with_Samtools == "yes" 
 
 script:
-MAPQ_quality = params.ChIP_Module_Remove_Multimappers_with_Samtools.MAPQ_quality
+MAPQ_quality = params.ChIP_Module_Samtools_Remove_Multimappers.MAPQ_quality
 """
 mkdir bam
 samtools view -hb -q ${MAPQ_quality} ${bam} > ${name}_unique.bam
@@ -2866,11 +2985,12 @@ mv ${name}_unique.bam bam/${name}.bam
 
 }
 
+//* params.run_Picard_MarkDuplicates =  "yes"  //* @dropdown @options:"yes","no"
 
 //* autofill
 if ($HOSTNAME == "default"){
     $CPU  = 1
-    $MEMORY = 15
+    $MEMORY = 32
 }
 //* platform
 //* platform
@@ -2878,240 +2998,31 @@ if ($HOSTNAME == "default"){
 
 process ChIP_Module_Picard_MarkDuplicates {
 
+publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /${name}.*$/) "picard_deduplication/$filename"}
 input:
  tuple val(name), file(bam)
 
 output:
- tuple val(name), file("bam/${name}.bam")  ,emit:g87_22_mapped_reads01_g87_25 
- tuple val(name), file("${name}*")  ,emit:g87_22_publish11 
- path "*_duplicates_stats.log"  ,emit:g87_22_log_file20_g87_23 
+ tuple val(name), file("bam/${name}.bam")  ,emit:g87_1_mapped_reads01_g87_6 
+ tuple val(name), file("${name}*")  ,emit:g87_1_publish11 
+ path "*_duplicates_stats.log" ,optional:true  ,emit:g87_1_log_file22 
+
+container 'quay.io/viascientific/picard:1.0'
 
 when:
-(params.run_Remove_Multimappers_with_Picard && (params.run_Remove_Multimappers_with_Picard == "yes")) || !params.run_Remove_Multimappers_with_Picard     
+(params.run_Picard_MarkDuplicates && (params.run_Picard_MarkDuplicates == "yes")) || !params.run_Picard_MarkDuplicates     
 
 script:
 """
 mkdir bam
-picard MarkDuplicates OUTPUT=${name}_dedup.bam METRICS_FILE=${name}_picard_PCR_duplicates.log  VALIDATION_STRINGENCY=LENIENT REMOVE_DUPLICATES=false INPUT=${bam} > ${name}_picard.log 
-
-#get duplicates stats (read the sam flags)
-samtools flagstat ${name}_dedup.bam > ${name}@Reads@${name}_duplicates_stats.log
-#remove alignments marked as duplicates
-samtools view -b -F 0x400 ${name}_dedup.bam > ${name}_dedup.bam.x_dup
-#sort deduplicated files by chrom pos
-samtools sort -o ${name}_sorted.dedup.bam ${name}_dedup.bam.x_dup 
-mv ${name}_sorted.dedup.bam bam/${name}.bam
-#get properly paired log stats after dedup
-echo "##After Deduplication##" >> ${name}@Reads@${name}_duplicates_stats.log
-samtools flagstat bam/${name}.bam >> ${name}@Reads@${name}_duplicates_stats.log
+picard MarkDuplicates OUTPUT=${name}_dedup.bam METRICS_FILE=${name}_PCR_duplicates  VALIDATION_STRINGENCY=LENIENT REMOVE_DUPLICATES=true INPUT=${bam} 
+mv ${name}_dedup.bam bam/${name}.bam
+grep "Unknown" *_PCR_duplicates|awk -F '\t' '{print "${name}\t" \$9}' > ${name}_picardDedup_summary.txt
 """
 }
 
-
-process ChIP_Module_Picard_Deduplication_Summary {
-
-publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /deduplication_summary.tsv$/) "picard_deduplication/$filename"}
-input:
- path flagstat
- val mate
-
-output:
- path "deduplication_summary.tsv"  ,emit:g87_23_outputFileTSV07_g_75 
-
-errorStrategy 'retry'
-maxRetries 2
-
-shell:
-'''
-#!/usr/bin/env perl
-use List::Util qw[min max];
-use strict;
-use File::Basename;
-use Getopt::Long;
-use Pod::Usage;
-use Data::Dumper;
-
-my @header;
-my %all_files;
-my %tsv;
-my %headerHash;
-my %headerText;
-
-my $i=0;
-chomp(my $contents = `ls *_duplicates_stats.log`);
-my @files = split(/[\\n]+/, $contents);
-foreach my $file (@files){
-    $i++;
-    $file=~/(.*)@(.*)@(.*)_duplicates_stats\\.log/;
-    my $mapOrder = int($1); 
-    my $mapper = $2; #mapped element 
-    my $name = $3; ##sample name
-    push(@header, $mapper) unless grep{$_ eq $mapper} @header; 
-        
-    # my $duplicates;
-    my $aligned;
-    my $dedup; #aligned reads after dedup
-    my $percent=0;
-    if ("!{mate}" eq "pair" ){
-        #first flagstat belongs to first bam file
-        chomp($aligned = `cat $file | grep 'properly paired (' | sed -n 1p | awk '{sum+=\\$1+\\$3} END {print sum}'`);
-        #second flagstat belongs to dedup bam file
-        chomp($dedup = `cat $file | grep 'properly paired (' | sed -n 2p | awk '{sum+=\\$1+\\$3} END {print sum}'`);
-    } else {
-        chomp($aligned = `cat $file | grep 'mapped (' | sed -n 1p | awk '{sum+=\\$1+\\$3} END {print sum}'`);
-        chomp($dedup = `cat $file | grep 'mapped (' | sed -n 2p | awk '{sum+=\\$1+\\$3} END {print sum}'`);
-    }
-    # chomp($duplicates = `cat $file | grep 'duplicates' | awk '{sum+=\\$1+\\$3} END {print sum}'`);
-    # $dedup = int($aligned) - int($duplicates);
-    if ("!{mate}" eq "pair" ){
-       $dedup = int($dedup/2);
-       $aligned = int($aligned/2);
-    } 
-    $percent = "0.00";
-    if (int($aligned)  > 0 ){
-       $percent = sprintf("%.2f", ($aligned-$dedup)/$aligned*100); 
-    } 
-    $tsv{$name}{$mapper}=[$aligned,$dedup,"$percent%"];
-    $headerHash{$mapOrder}=$mapper;
-    $headerText{$mapOrder}=["$mapper (Before Dedup)", "$mapper (After Dedup)", "$mapper (Duplication Ratio %)"];
-}
-
-my @mapOrderArray = ( keys %headerHash );
-my @sortedOrderArray = sort { $a <=> $b } @mapOrderArray;
-
-my $summary = "deduplication_summary.tsv";
-open(OUT, ">$summary");
-print OUT "Sample\\t";
-my @headArr = ();
-for my $mapOrder (@sortedOrderArray) {
-    push (@headArr, @{$headerText{$mapOrder}});
-}
-my $headArrAll = join("\\t", @headArr);
-print OUT "$headArrAll\\n";
-
-foreach my $name (keys %tsv){
-    my @rowArr = ();
-    for my $mapOrder (@sortedOrderArray) {
-        push (@rowArr, @{$tsv{$name}{$headerHash{$mapOrder}}});
-    }
-    my $rowArrAll = join("\\t", @rowArr);
-    print OUT "$name\\t$rowArrAll\\n";
-}
-close(OUT);
-'''
-}
-
-//* autofill
-//* platform
-//* platform
-//* autofill
-
-process Overall_Summary {
-
-publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /overall_summary.tsv$/) "summary/$filename"}
-input:
- path starSum
- path sequentialSum
- path adapterSum
- path trimmerSum
- path qualitySum
- path qualitySum
-
-output:
- path "overall_summary.tsv" ,optional:true  ,emit:g_75_outputFileTSV00 
-
-shell:
-'''
-#!/usr/bin/env perl
-use List::Util qw[min max];
-use strict;
-use File::Basename;
-use Getopt::Long;
-use Pod::Usage;
-use Data::Dumper;
-
-my @header;
-my %all_rows;
-my @seen_cols;
-my $ID_header;
-
-chomp(my $contents = `ls *.tsv`);
-my @rawFiles = split(/[\\n]+/, $contents);
-if (scalar @rawFiles == 0){
-    exit;
-}
-my @files = ();
-# order must be in this order for chipseq pipeline: bowtie->dedup
-# rsem bam pipeline: dedup->rsem, star->dedup
-# riboseq ncRNA_removal->star
-my @order = ("adapter_removal","trimmer","quality","extractUMI","extractValid","tRAX","sequential_mapping","ncRNA_removal","bowtie","star","hisat2","tophat2", "dedup","rsem","kallisto","salmon","esat","count");
-for ( my $k = 0 ; $k <= $#order ; $k++ ) {
-    for ( my $i = 0 ; $i <= $#rawFiles ; $i++ ) {
-        if ( $rawFiles[$i] =~ /$order[$k]/ ) {
-            push @files, $rawFiles[$i];
-        }
-    }
-}
-
-print Dumper \\@files;
-##add rest of the files
-for ( my $i = 0 ; $i <= $#rawFiles ; $i++ ) {
-    push(@files, $rawFiles[$i]) unless grep{$_ == $rawFiles[$i]} @files;
-}
-print Dumper \\@files;
-
-##Merge each file according to array order
-
-foreach my $file (@files){
-        open IN,"$file";
-        my $line1 = <IN>;
-        chomp($line1);
-        ( $ID_header, my @header) = ( split("\\t", $line1) );
-        push @seen_cols, @header;
-
-        while (my $line=<IN>) {
-        chomp($line);
-        my ( $ID, @fields ) = ( split("\\t", $line) ); 
-        my %this_row;
-        @this_row{@header} = @fields;
-
-        #print Dumper \\%this_row;
-
-        foreach my $column (@header) {
-            if (! exists $all_rows{$ID}{$column}) {
-                $all_rows{$ID}{$column} = $this_row{$column}; 
-            }
-        }   
-    }
-    close IN;
-}
-
-#print for debugging
-#print Dumper \\%all_rows;
-#print Dumper \\%seen_cols;
-
-#grab list of column headings we've seen, and order them. 
-my @cols_to_print = uniq(@seen_cols);
-my $summary = "overall_summary.tsv";
-open OUT, ">$summary";
-print OUT join ("\\t", $ID_header,@cols_to_print),"\\n";
-foreach my $key ( keys %all_rows ) { 
-    #map iterates all the columns, and gives the value or an empty string. if it's undefined. (prevents errors)
-    print OUT join ("\\t", $key, (map { $all_rows{$key}{$_} // '' } @cols_to_print)),"\\n";
-}
-close OUT;
-
-sub uniq {
-    my %seen;
-    grep ! $seen{$_}++, @_;
-}
-
-'''
-
-
-}
-
-macs2_callpeak_parameters = params.ChIP_Module_ChIP_Prep.macs2_callpeak_parameters
+//* params.bedtools_path =  ""  //* @input
+macs3_callpeak_parameters = params.ChIP_Module_ChIP_Prep.macs3_callpeak_parameters
 peak_calling_type = params.ChIP_Module_ChIP_Prep.peak_calling_type
 band_width = params.ChIP_Module_ChIP_Prep.band_width
 bedtoolsCoverage_Parameters = params.ChIP_Module_ChIP_Prep.bedtoolsCoverage_Parameters
@@ -3119,11 +3030,15 @@ compare_Custom_Bed = params.ChIP_Module_ChIP_Prep.compare_Custom_Bed
 output_prefix = params.ChIP_Module_ChIP_Prep.output_prefix
 sample_prefix = params.ChIP_Module_ChIP_Prep.sample_prefix
 input_prefix = params.ChIP_Module_ChIP_Prep.input_prefix
-//* @spreadsheet:{output_prefix,sample_prefix,input_prefix} @multicolumn:{macs2_callpeak_parameters,peak_calling_type,band_width,bedtoolsCoverage_Parameters}
+//* @spreadsheet:{output_prefix,sample_prefix,input_prefix} @multicolumn:{output_prefix,sample_prefix,input_prefix},{macs3_callpeak_parameters,peak_calling_type,band_width,bedtoolsCoverage_Parameters}
 samplehash = [:]
 inputhash = [:]
 output_prefix.eachWithIndex { key, i -> inputhash[key] = input_prefix[i] }
 output_prefix.eachWithIndex { key, i -> samplehash[key] = sample_prefix[i] }
+
+// String nameList = output_prefix.collect { "\"$it\"" }.join( ' ' )
+// String samplesList = sample_prefix.collect { "\"$it\"" }.join( ' ' )
+// String inputsList = input_prefix.collect { "\"$it\"" }.join( ' ' )
 
 process ChIP_Module_ChIP_Prep {
 
@@ -3132,11 +3047,11 @@ input:
  tuple val(name), file(bam)
 
 output:
- path "bam/*.bam"  ,emit:g87_25_bam_file01_g87_9 
- val output_prefix  ,emit:g87_25_name12_g87_9 
+ path "bam/*.bam"  ,emit:g87_6_bam_file01_g87_9 
+ val output_prefix  ,emit:g87_6_name12_g87_9 
 
 when:
-(params.run_ChIP_MACS2 && (params.run_ChIP_MACS2 == "yes")) || !params.run_ChIP_MACS2
+(params.run_ChIP_MACS3 && (params.run_ChIP_MACS3 == "yes")) || !params.run_ChIP_MACS3
 
 script:
 """
@@ -3146,7 +3061,7 @@ mv ${bam} bam/${name}.bam
 }
 
 
-process ChIP_Module_ChIP_MACS2 {
+process ChIP_Module_ChIP_MACS3 {
 
 publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /bam\/.*.bam$/) "chip/$filename"}
 publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /${name}.*$/) "chip/$filename"}
@@ -3156,11 +3071,12 @@ input:
  val name
 
 output:
- val compare_bed  ,emit:g87_9_compare_bed00_g87_27 
- path "*${peak_calling_type}Peak"  ,emit:g87_9_bed10_g87_10 
- tuple val(name), file("bam/*.bam")  ,emit:g87_9_bam_file21_g87_10 
- path "${name}*"  ,emit:g87_9_resultsdir33 
- val name  ,emit:g87_9_name44 
+ val compare_bed  ,emit:g87_9_compare_bed00_g87_12 
+ tuple val(name), file("*${peak_calling_type}Peak")  ,emit:g87_9_bedFile10_g87_11 
+ tuple val(name), file("bam/*.bam")  ,emit:g87_9_bam_file22_g87_12 
+ path "${name}*"  ,emit:g87_9_resultsdir310_g_70 
+
+container "quay.io/viascientific/macs3-samtools:1.0.2"
 
 script:
 genomeSizeText = ""
@@ -3209,7 +3125,7 @@ if [ "\${inputsList}" != "" ]; then
 fi
 echo \${eachSampleArBam[@]}
 
-macs2 callpeak --bw ${band_width} -t \${sample_set} \${input_set} -n ${name} ${genomeSizeText} ${macs2_callpeak_parameters} ${peakcallingType}
+macs3 callpeak --bw ${band_width} -t \${sample_set} \${input_set} -n ${name} ${genomeSizeText} ${macs3_callpeak_parameters} ${peakcallingType}
 
 #bam files
 if [ "\$numSamples" -gt "1" ]; then
@@ -3219,35 +3135,6 @@ else
 fi
 
 """
-}
-
-//* params.peakrescore_path =  ""  //* @input
-//* params.peakrescore_class_path =  ""  //* @input
-
-
-process ChIP_Module_Scripture_peakrescore {
-
-input:
- path bed
- tuple val(name), file(bam)
-
-output:
- path "${name}_trim.bed"  ,emit:g87_10_bed00_g87_26 
-
-when:
-params.run_Scripture == "yes"
-
-script:
-window = params.ChIP_Module_Scripture_peakrescore.window
-trimFraction = params.ChIP_Module_Scripture_peakrescore.trimFraction
-windowText = (window.toString() != "") ? "-window ${window}" : ""
-trimFractionText = (trimFraction.toString() != "") ? "-trimFraction ${trimFraction}" : ""
-"""
-samtools index ${bam}
-cat ${bed} | awk '{print \$1"\t"\$2"\t"\$3"\t"\$4"\t"\$5}' > ${name}_clean 
-java -cp ${params.peakrescore_path}:${params.peakrescore_class_path} peaks.PeakTrim -task trimByFractionOfScale -in ${name}_clean -libAlignment ${bam}  $windowText $trimFractionText -out ${name}_trim.bed 
-"""
-
 }
 
 //* params.pdfbox_path =  ""  //* @input
@@ -3285,7 +3172,6 @@ mkdir results && java -jar ${params.pdfbox_path} PDFMerger *.pdf results/${name}
 process BAM_Analysis_Module_Picard_Summary {
 
 publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /.*.tsv$/) "picard_summary/$filename"}
-publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /.*.tsv$/) "rseqc_summary/$filename"}
 publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /results\/.*.pdf$/) "picard/$filename"}
 input:
  path picardOut
@@ -3296,8 +3182,8 @@ output:
  path "*.tsv"  ,emit:g74_82_outputFileTSV00 
  path "results/*.pdf"  ,emit:g74_82_outputFilePdf11 
 
-shell:
-'''
+script:
+"""
 #!/usr/bin/env perl
 use List::Util qw[min max];
 use strict;
@@ -3308,54 +3194,54 @@ use Data::Dumper;
 
 runCommand("mkdir results && mv *.pdf results/. ");
 
-my $indir = $ENV{'PWD'};
-my $outd = $ENV{'PWD'};
+my \$indir = \$ENV{'PWD'};
+my \$outd = \$ENV{'PWD'};
 my @files = ();
 my @outtypes = ("CollectRnaSeqMetrics", "alignment_summary_metrics", "base_distribution_by_cycle_metrics", "insert_size_metrics", "quality_by_cycle_metrics", "quality_distribution_metrics" );
 
-foreach my $outtype (@outtypes)
+foreach my \$outtype (@outtypes)
 {
-my $ext="_multiple.out";
-$ext.=".$outtype" if ($outtype ne "CollectRnaSeqMetrics");
-@files = <$indir/*$ext>;
+my \$ext="_multiple.out";
+\$ext.=".\$outtype" if (\$outtype ne "CollectRnaSeqMetrics");
+@files = <\$indir/*\$ext>;
 
 my @rowheaders=();
 my @libs=();
 my %metricvals=();
 my %histvals=();
 
-my $pdffile="";
-my $libname="";
-foreach my $d (@files){
-  my $libname=basename($d, $ext);
-  print $libname."\\n";
-  push(@libs, $libname); 
-  getMetricVals($d, $libname, \\%metricvals, \\%histvals, \\@rowheaders);
+my \$pdffile="";
+my \$libname="";
+foreach my \$d (@files){
+  my \$libname=basename(\$d, \$ext);
+  print \$libname."\\n";
+  push(@libs, \$libname); 
+  getMetricVals(\$d, \$libname, \\%metricvals, \\%histvals, \\@rowheaders);
 }
 
-my $sizemetrics = keys %metricvals;
-write_results("$outd/$outtype.stats.tsv", \\@libs,\\%metricvals, \\@rowheaders, "metric") if ($sizemetrics>0);
-my $sizehist = keys %histvals;
-write_results("$outd/$outtype.hist.tsv", \\@libs,\\%histvals, "none", "nt") if ($sizehist>0);
+my \$sizemetrics = keys %metricvals;
+write_results("\$outd/\$outtype.stats.tsv", \\@libs,\\%metricvals, \\@rowheaders, "metric") if (\$sizemetrics>0);
+my \$sizehist = keys %histvals;
+write_results("\$outd/\$outtype.hist.tsv", \\@libs,\\%histvals, "none", "nt") if (\$sizehist>0);
 
 }
 
 sub write_results
 {
-  my ($outfile, $libs, $vals, $rowheaders, $name )=@_;
-  open(OUT, ">$outfile");
-  print OUT "$name\\t".join("\\t", @{$libs})."\\n";
-  my $size=0;
-  $size=scalar(@{${$vals}{${$libs}[0]}}) if(exists ${$libs}[0] and exists ${$vals}{${$libs}[0]} );
+  my (\$outfile, \$libs, \$vals, \$rowheaders, \$name )=@_;
+  open(OUT, ">\$outfile");
+  print OUT "\$name\\t".join("\\t", @{\$libs})."\\n";
+  my \$size=0;
+  \$size=scalar(@{\${\$vals}{\${\$libs}[0]}}) if(exists \${\$libs}[0] and exists \${\$vals}{\${\$libs}[0]} );
   
-  for (my $i=0; $i<$size;$i++)
+  for (my \$i=0; \$i<\$size;\$i++)
   { 
-    my $rowname=$i;
-    $rowname = ${$rowheaders}[$i] if ($name=~/metric/);
-    print OUT $rowname;
-    foreach my $lib (@{$libs})
+    my \$rowname=\$i;
+    \$rowname = \${\$rowheaders}[\$i] if (\$name=~/metric/);
+    print OUT \$rowname;
+    foreach my \$lib (@{\$libs})
     {
-      print OUT "\\t".${${$vals}{$lib}}[$i];
+      print OUT "\\t".\${\${\$vals}{\$lib}}[\$i];
     } 
     print OUT "\\n";
   }
@@ -3363,27 +3249,27 @@ sub write_results
 }
 
 sub getMetricVals{
-  my ($filename, $libname, $metricvals, $histvals,$rowheaders)=@_;
-  if (-e $filename){
-     my $nextisheader=0;
-     my $nextisvals=0;
-     my $nexthist=0;
-     open(IN, $filename);
-     while(my $line=<IN>)
+  my (\$filename, \$libname, \$metricvals, \$histvals,\$rowheaders)=@_;
+  if (-e \$filename){
+     my \$nextisheader=0;
+     my \$nextisvals=0;
+     my \$nexthist=0;
+     open(IN, \$filename);
+     while(my \$line=<IN>)
      {
-       chomp($line);
-       @{$rowheaders}=split(/\\t/, $line) if ($nextisheader && !scalar(@{$rowheaders})); 
-       if ($nextisvals) {
-         @{${$metricvals}{$libname}}=split(/\\t/, $line);
-         $nextisvals=0;
+       chomp(\$line);
+       @{\$rowheaders}=split(/\\t/, \$line) if (\$nextisheader && !scalar(@{\$rowheaders})); 
+       if (\$nextisvals) {
+         @{\${\$metricvals}{\$libname}}=split(/\\t/, \$line);
+         \$nextisvals=0;
        }
-       if($nexthist){
-          my @vals=split(/[\\s\\t]+/,$line); 
-          push(@{${$histvals}{$libname}}, $vals[1]) if (exists $vals[1]);
+       if(\$nexthist){
+          my @vals=split(/[\\s\\t]+/,\$line); 
+          push(@{\${\$histvals}{\$libname}}, \$vals[1]) if (exists \$vals[1]);
        }
-       $nextisvals=1 if ($nextisheader); $nextisheader=0;
-       $nextisheader=1 if ($line=~/METRICS CLASS/);
-       $nexthist=1 if ($line=~/normalized_position/);
+       \$nextisvals=1 if (\$nextisheader); \$nextisheader=0;
+       \$nextisheader=1 if (\$line=~/METRICS CLASS/);
+       \$nexthist=1 if (\$line=~/normalized_position/);
      } 
   }
   
@@ -3391,15 +3277,15 @@ sub getMetricVals{
 
 
 sub runCommand {
-	my ($com) = @_;
-	if ($com eq ""){
+	my (\$com) = @_;
+	if (\$com eq ""){
 		return "";
     }
-    my $error = system(@_);
-	if   ($error) { die "Command failed: $error $com\\n"; }
-    else          { print "Command successful: $com\\n"; }
+    my \$error = system(@_);
+	if   (\$error) { die "Command failed: \$error \$com\\n"; }
+    else          { print "Command successful: \$com\\n"; }
 }
-'''
+"""
 
 }
 
@@ -3421,7 +3307,7 @@ input:
  path bed
 
 output:
- path "result/*.out"  ,emit:g74_134_outputFileOut08_g_70 
+ path "result/*.out"  ,emit:g74_134_outputFileOut011_g_70 
 
 label 'rseqc'
 
@@ -3435,32 +3321,6 @@ mkdir result
 read_distribution.py  -i ${bam} -r ${bed}> result/RSeQC.${name}.out
 infer_experiment.py -i $bam  -r $bed > result/${name}.infer_experiment.out
 """
-}
-
-//* autofill
-//* platform
-//* platform
-//* autofill
-
-process MultiQC {
-
-publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /multiqc_report.html$/) "multiQC/$filename"}
-input:
- path "fastqc/*"
- path "rseqc_star/*"
- path "bowtie/*"
-
-output:
- path "multiqc_report.html" ,optional:true  ,emit:g_70_outputHTML00 
-
-errorStrategy 'ignore'
-
-script:
-multiqc_parameters = params.MultiQC.multiqc_parameters
-"""
-multiqc ${multiqc_parameters} -e general_stats -d -dd 2 .
-"""
-
 }
 
 
@@ -3482,7 +3342,7 @@ input:
  path genomeSizes
 
 output:
- path "*.bw"  ,emit:g74_142_outputFileBw00 
+ tuple val(name), file("*.bw")  ,emit:g74_142_bigWig_tuple00_g_109 
 
 when:
 (params.run_BigWig_Conversion && (params.run_BigWig_Conversion == "yes")) || !params.run_BigWig_Conversion
@@ -3501,6 +3361,21 @@ if (nameAll.contains('_sorted.bam')) {
 $runSamtools
 bedtools genomecov -split -bg -ibam ${nameFinal} -g ${genomeSizes} > ${name}.bg 
 wigToBigWig -clip -itemsPerSlot=1 ${name}.bg ${genomeSizes} ${name}.bw 
+"""
+}
+
+
+process tuple_to_file_for_bigwig {
+
+input:
+ tuple val(name), file(bigwig)
+
+output:
+ path bigwig  ,emit:g_109_bigWig_file03_g_99 
+
+script:
+"""
+echo $bigwig
 """
 }
 
@@ -3546,20 +3421,55 @@ igvtools count -w ${igv_window_size} -e ${igv_extention_factor} ${pairedText} ${
 """
 }
 
+//* autofill
+//* platform
+//* platform
+//* autofill
+
+process MultiQC {
+
+publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /multiqc_report.html$/) "multiQC/$filename"}
+input:
+ path "fastqc/*"
+ path "macs/*"
+ path "rseqc_bowtie/*"
+ path "bowtie/*"
+ path "after_adapter_removal/*"
+
+output:
+ path "multiqc_report.html" ,optional:true  ,emit:g_70_outputHTML00 
+
+errorStrategy 'ignore'
+
+script:
+multiqc_parameters = params.MultiQC.multiqc_parameters
+"""
+multiqc ${multiqc_parameters} -e general_stats -d -dd 2 .
+"""
+
+}
+
 
 process ChIP_Module_bed_merge {
 
-publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /merged.bed$/) "chip/$filename"}
 input:
  path bed
- path genome_sizes
+ path genomeSizes
 
 output:
- path "merged.bed"  ,emit:g87_26_bed01_g87_27 
+ path "merged.bed"  ,emit:g87_11_bed01_g87_12 
+
+container "quay.io/biocontainers/bedtools:2.31.1--h13024bc_3"
+
+script:
 
 """
- cat ${bed} | cut -f -6 | bedtools sort -i stdin | bedtools slop -i stdin -b 100 -g ${genome_sizes} | bedtools merge -i stdin | awk '{print \$0"\t"\$1"_"\$2"_"\$3}' > merged.bed
-
+cat ${bed} \
+| cut -f -6 \
+| bedtools sort -i stdin \
+| bedtools slop -i stdin -b 100 -g ${genomeSizes} \
+| bedtools merge -i stdin \
+| awk '{print \$0"\t"\$1"_"\$2"_"\$3}' > merged.bed
 """
 }
 
@@ -3574,7 +3484,7 @@ input:
  tuple val(name), file(bam)
 
 output:
- path "*.sum.txt"  ,emit:g87_27_outputFileTxt00_g87_13 
+ path "*.sum.txt"  ,emit:g87_12_outputFileTxt00_g87_13 
 
 script:
 bedtoolsCoverage_Parameters = params.ChIP_Module_bedtools_coverage.bedtoolsCoverage_Parameters
@@ -3612,7 +3522,7 @@ input:
 output:
  path "*.tsv"  ,emit:g87_13_outputFile00 
 
-shell:
+script:
 '''
 #!/usr/bin/env perl
 
@@ -3661,6 +3571,253 @@ foreach my $key (keys %b){
 }
 close OUT;
 '''
+}
+
+
+process HOMER_Module_HOMER_Annotate_Peaks {
+
+publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /${name}_annotated_peaks.txt$/) "annotated_peaks/$filename"}
+input:
+ tuple val(name), file(bed_file)
+ path homerdb
+
+output:
+ path "${name}_annotated_peaks.txt"  ,emit:g95_2_inputFileTxt02_g_99 
+
+container "quay.io/viascientific/homer:5.1"
+stageInMode = 'copy'
+
+when:
+params.run_HOMER == "yes"
+
+script:
+def db = params.genome_build.split("_")[1]
+
+"""
+export HOMER_DATA=/opt/homerdata
+mkdir -p /opt/homerdata/data
+cp -R /opt/knownTFs /opt/homerdata/data/.
+cp homerdb/config.txt /opt/homerdata/config.txt
+
+for db_t in \$(ls homerdb/*.tar); do 
+    tar -xf \${db_t}
+    db_n=\$(basename \${db_t} | sed 's/.tar//g')
+    mv  \$db_n /opt/homerdata/data
+done
+
+# Run annotation
+annotatePeaks.pl ${bed_file} ${db} | tee ${name}_annotated_peaks.txt
+"""
+
+}
+
+
+process HOMER_Module_HOMER_Motif_Finder {
+
+publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /${name}_motifs$/) "motifs/$filename"}
+input:
+ path homerdb
+ tuple val(name), file(bed_file)
+
+output:
+ path "${name}_motifs"  ,emit:g95_5_outputDir01_g_99 
+
+stageInMode = 'copy'
+container "quay.io/viascientific/homer:5.1"
+
+
+when:
+params.run_HOMER == "yes"
+
+script:
+
+db = params.genome_build.split("_")[1]
+
+//def name_n = new File(name.toString()).getName().split('\\.')[0]
+
+motif_length = params.HOMER_Module_HOMER_Motif_Finder.motif_length
+motif_size = params.HOMER_Module_HOMER_Motif_Finder.motif_size
+motif_opti = params.HOMER_Module_HOMER_Motif_Finder.motif_opti
+mismatches = params.HOMER_Module_HOMER_Motif_Finder.mismatches
+
+rna_check = params.HOMER_Module_HOMER_Motif_Finder.rna_check
+rna = ( rna_check == "true" ) ? "-rna" : ""
+norevopp_check = params.HOMER_Module_HOMER_Motif_Finder.norevopp_check
+norevopp = ( norevopp_check == "true" ) ? "-norevopp" : ""
+nomotif_check = params.HOMER_Module_HOMER_Motif_Finder.nomotif_check
+nomotif = ( nomotif_check == "true" ) ? "-nomotif" : ""
+noknown_check = params.HOMER_Module_HOMER_Motif_Finder.noknown_check
+noknown = ( noknown_check == "true" ) ? "-noknown" : ""
+
+//* @style @condition:{rna_check="false", norevopp_check},{rna_check="true"} @multicolumn:{rna_check, norevopp_check, nomotif_check, noknown_check}
+
+"""
+export HOMER_DATA=/opt/homerdata
+mkdir -p /opt/homerdata/data
+cp -R /opt/knownTFs /opt/homerdata/data/.
+cp homerdb/config.txt /opt/homerdata/config.txt
+
+for db_t in \$(ls homerdb/*.tar); do 
+    tar -xf \${db_t}
+    db_n=\$(basename \${db_t} | sed 's/.tar//g')
+    mv \$db_n /opt/homerdata/data
+done
+
+findMotifsGenome.pl ${bed_file} ${db} ${name}_motifs/ \
+-len ${motif_length} -size ${motif_size} \
+-S ${motif_opti} -mis ${mismatches} \
+${norevopp} \
+${nomotif} \
+${noknown} \
+"""
+
+}
+
+//* autofill
+if ($HOSTNAME == "default"){
+    $CPU  = 10
+    $MEMORY = 40
+}
+//* autofill
+
+process deepTools_Plot_Heatmap_deepTools_CreateMatrix {
+
+input:
+ tuple val(name), file(bigwig_file)
+ path bed_file
+
+output:
+ tuple val(name), file("${name}_matrix.gz")  ,emit:g107_2_zipped_file00_g107_1 
+
+container "quay.io/biocontainers/deeptools:3.5.6--pyhdfd78af_0"
+
+when:
+
+params.run_dtHeatmap == "yes"
+
+script:
+
+startLabel = params.deepTools_Plot_Heatmap_deepTools_CreateMatrix.startLabel
+endLabel = params.deepTools_Plot_Heatmap_deepTools_CreateMatrix.endLabel
+binsize = params.deepTools_Plot_Heatmap_deepTools_CreateMatrix.binsize
+brsl = params.deepTools_Plot_Heatmap_deepTools_CreateMatrix.brsl
+rbl = params.deepTools_Plot_Heatmap_deepTools_CreateMatrix.rbl
+arsl = params.deepTools_Plot_Heatmap_deepTools_CreateMatrix.arsl
+
+"""
+computeMatrix scale-regions -S ${bigwig_file} -R ${bed_file} \
+--outFileName ${name}_matrix.gz \
+--beforeRegionStartLength ${brsl} \
+--regionBodyLength ${rbl} \
+--afterRegionStartLength ${arsl} \
+--binSize ${binsize} \
+--skipZeros --missingDataAsZero \
+--startLabel ${startLabel} \
+--endLabel ${endLabel} \
+-p ${task.cpus}
+"""
+
+}
+
+
+process deepTools_Plot_Heatmap_deepTools_PlotHeatmap {
+
+input:
+ tuple val(name), file(matrix_gz)
+
+output:
+ path "*_heatmap.*"  ,emit:g107_1_png07_g_99 
+
+container "quay.io/biocontainers/deeptools:3.5.6--pyhdfd78af_0"
+
+script:
+
+plottitle = params.deepTools_Plot_Heatmap_deepTools_PlotHeatmap.plottitle
+plottitleText = plottitle ? "--plotTitle ${plottitle}" : ""
+sortregions = params.deepTools_Plot_Heatmap_deepTools_PlotHeatmap.sortregions
+alpha = params.deepTools_Plot_Heatmap_deepTools_PlotHeatmap.alpha
+heatmapwidth = params.deepTools_Plot_Heatmap_deepTools_PlotHeatmap.heatmapwidth
+heatmapheight = params.deepTools_Plot_Heatmap_deepTools_PlotHeatmap.heatmapheight
+dpi = params.deepTools_Plot_Heatmap_deepTools_PlotHeatmap.dpi
+plottype = params.deepTools_Plot_Heatmap_deepTools_PlotHeatmap.plottype
+plotff = params.deepTools_Plot_Heatmap_deepTools_PlotHeatmap.plotff
+
+"""
+plotHeatmap -m ${matrix_gz} --outFileName ${name}_heatmap.${plotff} \
+--plotType ${plottype} \
+--sortRegions ${sortregions} \
+--heatmapWidth ${heatmapwidth} \
+--heatmapHeight ${heatmapheight} \
+--alpha ${alpha} \
+--dpi ${dpi} \
+${plottitleText} \
+--plotFileFormat ${plotff}
+"""
+
+}
+
+
+process ChIP_seq_Reporting {
+
+publishDir params.outdir, mode: 'copy', saveAs: {filename -> if (filename =~ /.*.html$/) "ChIP_Report/$filename"}
+input:
+ path qc, stageAs: "report/qc/*"
+ path motifs, stageAs: "report/homer_motifs/*"
+ path ann_peaks, stageAs: "report/annotated_peaks/*"
+ path bigwig, stageAs: "report/bigwig/*"
+ path chip, stageAs: "report/bed/*"
+ path qc_a, stageAs: "report/qc_a/*"
+ path bam, stageAs: "report/bam_file/*"
+ path heatmap
+ path poweredby_logo, stageAs: "poweredby_logo.png"
+ path company_logo, stageAs: "company_logo.png"
+ path report_institute_css
+ path overall_summary, stageAs: "report/summary/*"
+
+output:
+ path "*.html"  ,emit:g_99_outputFileHTML00 
+
+container "quay.io/viascientific/chip-atac-report:1.0"
+
+when:
+!params.create_report || params.create_report == "yes"
+
+script:
+
+pipeline = params.pipe_name
+
+"""
+mkdir -p report/images/ report/bigwig
+
+if [[ ${pipeline} == 'ChIP' ]]; then
+    reporting_r='ChIPseq_Reporting.R'
+    reporting_rmd='ChIPseq_Reporting.Rmd'
+elif [[ ${pipeline} == 'ATAC' ]]; then
+    reporting_r='atacseq_reporting.r'
+    reporting_rmd='atacseq_reporting.rmd'
+fi
+
+path=\$(which \${reporting_rmd}) && cp \$path report/.
+path=\$(which \${reporting_r}) && cp \$path .
+
+cp ${company_logo} report/images/mainlogo.png
+cp ${poweredby_logo} report/images/vslogo.png
+cp ${heatmap} report/bigwig/
+
+cp ${report_institute_css} 'report/style.css'
+
+for file in report/bed/*_peaks*; do
+    base="\${file##*/}" # strip directory
+    name="\${base%%_peaks*}"  # strip from _peaks onward
+    echo "INFO: Report generation started for sample: \$name"  
+
+    peak_calling_type="\$(printf '%s' "\$base" | awk -F '.' '{print \$NF}' | sed 's/Peak\$//')"
+    echo "INFO: sample=\$name  peak_calling_type=\$peak_calling_type"
+    
+    \${reporting_r} report/\${reporting_rmd} \${name} '${params.genome_build}' '${params.mate}' \${peak_calling_type} 'images/mainlogo.png' 'images/vslogo.png' 'TRUE' '${params.report_institute_web_page}' '${params.report_institute_email}' '${params.report_institute_name}' '${params.report_institute_message}' {{FOUNDRY_PIPELINE_ID}}
+    mv report/${pipeline}-seq_Report_\${name}.html ${pipeline}-seq_Report_\${name}.html
+done
+"""
 }
 
 
@@ -3732,10 +3889,12 @@ g71_24_outputFileTSV00 = Adapter_Trimmer_Quality_Module_Umitools_Summary.out.g71
 
 Adapter_Trimmer_Quality_Module_FastQC(g_2_0_g71_28,g_1_1_g71_28)
 g71_28_FastQCout04_g_70 = Adapter_Trimmer_Quality_Module_FastQC.out.g71_28_FastQCout04_g_70
+(g71_28_FastQCout00_g_99) = [g71_28_FastQCout04_g_70]
 
 
 Adapter_Trimmer_Quality_Module_FastQC_after_Adapter_Removal(g_2_0_g71_31,g71_18_reads01_g71_31)
-g71_31_FastQCout00 = Adapter_Trimmer_Quality_Module_FastQC_after_Adapter_Removal.out.g71_31_FastQCout00
+g71_31_FastQCout015_g_70 = Adapter_Trimmer_Quality_Module_FastQC_after_Adapter_Removal.out.g71_31_FastQCout015_g_70
+(g71_31_FastQCout05_g_99) = [g71_31_FastQCout015_g_70]
 
 
 Check_and_Build_Module_Check_Genome_GTF()
@@ -3785,9 +3944,10 @@ Check_and_Build_Module_check_files(g78_58_gtfFile10_g78_54,g78_58_genome01_g78_5
 g78_54_gtfFile01_g72_47 = Check_and_Build_Module_check_files.out.g78_54_gtfFile01_g72_47
 g78_54_genome10_g72_47 = Check_and_Build_Module_check_files.out.g78_54_genome10_g72_47
 (g78_54_genome10_g73_17) = [g78_54_genome10_g72_47]
-g78_54_genomeSizes21_g87_26 = Check_and_Build_Module_check_files.out.g78_54_genomeSizes21_g87_26
-(g78_54_genomeSizes22_g74_131,g78_54_genomeSizes21_g74_142) = [g78_54_genomeSizes21_g87_26,g78_54_genomeSizes21_g87_26]
+g78_54_genomeSizes22_g74_131 = Check_and_Build_Module_check_files.out.g78_54_genomeSizes22_g74_131
+(g78_54_genomeSizes21_g74_142,g78_54_genomeSizes21_g87_11) = [g78_54_genomeSizes22_g74_131,g78_54_genomeSizes22_g74_131]
 g78_54_bed31_g74_134 = Check_and_Build_Module_check_files.out.g78_54_bed31_g74_134
+(g78_54_bed31_g107_2) = [g78_54_bed31_g74_134]
 
 
 Bowtie2_Module_Check_Build_Bowtie2_Index(g78_54_genome10_g73_17)
@@ -3903,11 +4063,21 @@ g73_10_name11_g73_11 = Bowtie2_Module_Bowtie_Summary.out.g73_10_name11_g73_11
 Bowtie2_Module_Merge_TSV_Files(g73_10_outputFileTSV00_g73_11.collect(),g73_10_name11_g73_11.collect())
 g73_11_outputFileTSV00_g_75 = Bowtie2_Module_Merge_TSV_Files.out.g73_11_outputFileTSV00_g_75
 
+g73_11_outputFileTSV00_g_75= g73_11_outputFileTSV00_g_75.ifEmpty(ch_empty_file_1) 
+g72_14_outputFileTSV01_g_75= g72_14_outputFileTSV01_g_75.ifEmpty(ch_empty_file_2) 
+g71_11_outputFileTSV05_g_75= g71_11_outputFileTSV05_g_75.ifEmpty(ch_empty_file_3) 
+g71_21_outputFileTSV06_g_75= g71_21_outputFileTSV06_g_75.ifEmpty(ch_empty_file_4) 
+g71_16_outputFileTSV07_g_75= g71_16_outputFileTSV07_g_75.ifEmpty(ch_empty_file_5) 
+
+
+Overall_Summary(g73_11_outputFileTSV00_g_75,g72_14_outputFileTSV01_g_75,g71_11_outputFileTSV05_g_75,g71_21_outputFileTSV06_g_75,g71_16_outputFileTSV07_g_75)
+g_75_outputFileTSV011_g_99 = Overall_Summary.out.g_75_outputFileTSV011_g_99
+
 
 Bowtie2_Module_Merge_Bam(g73_3_bam_file20_g73_4.groupTuple())
 g73_4_merged_bams00 = Bowtie2_Module_Merge_Bam.out.g73_4_merged_bams00
 g73_4_bam_index11 = Bowtie2_Module_Merge_Bam.out.g73_4_bam_index11
-g73_4_sorted_bam20_g87_21 = Bowtie2_Module_Merge_Bam.out.g73_4_sorted_bam20_g87_21
+g73_4_sorted_bam20_g87_0 = Bowtie2_Module_Merge_Bam.out.g73_4_sorted_bam20_g87_0
 
 
 Sequential_Mapping_Module_Sequential_Mapping_Bam_Dedup_count(g72_46_bam_file50_g72_45.collect(),g72_46_bam_index61_g72_45.collect(),g72_43_bowtieIndex12_g72_45,g72_43_bowtie2index23_g72_45,g72_43_starIndex34_g72_45,g72_43_commondb05_g72_45)
@@ -3919,63 +4089,39 @@ g72_44_outputFileTSV00 = Sequential_Mapping_Module_Sequential_Mapping_Bam_count.
 
 
 if (!(params.run_Remove_Multimappers_with_Samtools == "yes")){
-g73_4_sorted_bam20_g87_21.set{g87_21_mapped_reads00_g87_22}
+g73_4_sorted_bam20_g87_0.set{g87_0_mapped_reads00_g87_1}
 } else {
 
-ChIP_Module_Remove_Multimappers_with_Samtools(g73_4_sorted_bam20_g87_21)
-g87_21_mapped_reads00_g87_22 = ChIP_Module_Remove_Multimappers_with_Samtools.out.g87_21_mapped_reads00_g87_22
+ChIP_Module_Samtools_Remove_Multimappers(g73_4_sorted_bam20_g87_0)
+g87_0_mapped_reads00_g87_1 = ChIP_Module_Samtools_Remove_Multimappers.out.g87_0_mapped_reads00_g87_1
 }
 
 
-if (!((params.run_Remove_Multimappers_with_Picard && (params.run_Remove_Multimappers_with_Picard == "yes")) || !params.run_Remove_Multimappers_with_Picard)){
-g87_21_mapped_reads00_g87_22.set{g87_22_mapped_reads01_g87_25}
-g87_22_publish11 = Channel.empty()
-g87_22_log_file20_g87_23 = Channel.empty()
+if (!((params.run_Picard_MarkDuplicates && (params.run_Picard_MarkDuplicates == "yes")) || !params.run_Picard_MarkDuplicates)){
+g87_0_mapped_reads00_g87_1.set{g87_1_mapped_reads01_g87_6}
+g87_1_publish11 = Channel.empty()
+g87_1_log_file22 = Channel.empty()
 } else {
 
-ChIP_Module_Picard_MarkDuplicates(g87_21_mapped_reads00_g87_22)
-g87_22_mapped_reads01_g87_25 = ChIP_Module_Picard_MarkDuplicates.out.g87_22_mapped_reads01_g87_25
-g87_22_publish11 = ChIP_Module_Picard_MarkDuplicates.out.g87_22_publish11
-g87_22_log_file20_g87_23 = ChIP_Module_Picard_MarkDuplicates.out.g87_22_log_file20_g87_23
+ChIP_Module_Picard_MarkDuplicates(g87_0_mapped_reads00_g87_1)
+g87_1_mapped_reads01_g87_6 = ChIP_Module_Picard_MarkDuplicates.out.g87_1_mapped_reads01_g87_6
+g87_1_publish11 = ChIP_Module_Picard_MarkDuplicates.out.g87_1_publish11
+g87_1_log_file22 = ChIP_Module_Picard_MarkDuplicates.out.g87_1_log_file22
 }
 
 
-ChIP_Module_Picard_Deduplication_Summary(g87_22_log_file20_g87_23.collect(),g_2_1_g87_23)
-g87_23_outputFileTSV07_g_75 = ChIP_Module_Picard_Deduplication_Summary.out.g87_23_outputFileTSV07_g_75
-
-g73_11_outputFileTSV00_g_75= g73_11_outputFileTSV00_g_75.ifEmpty(ch_empty_file_1) 
-g72_14_outputFileTSV01_g_75= g72_14_outputFileTSV01_g_75.ifEmpty(ch_empty_file_2) 
-g71_11_outputFileTSV05_g_75= g71_11_outputFileTSV05_g_75.ifEmpty(ch_empty_file_3) 
-g71_21_outputFileTSV06_g_75= g71_21_outputFileTSV06_g_75.ifEmpty(ch_empty_file_4) 
-g71_16_outputFileTSV07_g_75= g71_16_outputFileTSV07_g_75.ifEmpty(ch_empty_file_5) 
-g87_23_outputFileTSV07_g_75= g87_23_outputFileTSV07_g_75.ifEmpty(ch_empty_file_6) 
+ChIP_Module_ChIP_Prep(g_2_0_g87_6,g87_1_mapped_reads01_g87_6)
+g87_6_bam_file01_g87_9 = ChIP_Module_ChIP_Prep.out.g87_6_bam_file01_g87_9
+g87_6_name12_g87_9 = ChIP_Module_ChIP_Prep.out.g87_6_name12_g87_9
 
 
-Overall_Summary(g73_11_outputFileTSV00_g_75,g72_14_outputFileTSV01_g_75,g71_11_outputFileTSV05_g_75,g71_21_outputFileTSV06_g_75,g71_16_outputFileTSV07_g_75,g87_23_outputFileTSV07_g_75)
-g_75_outputFileTSV00 = Overall_Summary.out.g_75_outputFileTSV00
-
-
-ChIP_Module_ChIP_Prep(g_2_0_g87_25,g87_22_mapped_reads01_g87_25)
-g87_25_bam_file01_g87_9 = ChIP_Module_ChIP_Prep.out.g87_25_bam_file01_g87_9
-g87_25_name12_g87_9 = ChIP_Module_ChIP_Prep.out.g87_25_name12_g87_9
-
-
-ChIP_Module_ChIP_MACS2(g_2_0_g87_9,g87_25_bam_file01_g87_9.collect(),g87_25_name12_g87_9.unique().flatten())
-g87_9_compare_bed00_g87_27 = ChIP_Module_ChIP_MACS2.out.g87_9_compare_bed00_g87_27
-g87_9_bed10_g87_10 = ChIP_Module_ChIP_MACS2.out.g87_9_bed10_g87_10
-g87_9_bam_file21_g87_10 = ChIP_Module_ChIP_MACS2.out.g87_9_bam_file21_g87_10
-(g87_9_bam_file22_g87_27,g87_9_bam_file21_g74_131,g87_9_bam_file20_g74_142,g87_9_bam_file20_g74_134,g87_9_bam_file20_g74_121) = [g87_9_bam_file21_g87_10,g87_9_bam_file21_g87_10,g87_9_bam_file21_g87_10,g87_9_bam_file21_g87_10,g87_9_bam_file21_g87_10]
-g87_9_resultsdir33 = ChIP_Module_ChIP_MACS2.out.g87_9_resultsdir33
-g87_9_name44 = ChIP_Module_ChIP_MACS2.out.g87_9_name44
-
-
-if (!(params.run_Scripture == "yes")){
-g87_9_bed10_g87_10.set{g87_10_bed00_g87_26}
-} else {
-
-ChIP_Module_Scripture_peakrescore(g87_9_bed10_g87_10,g87_9_bam_file21_g87_10)
-g87_10_bed00_g87_26 = ChIP_Module_Scripture_peakrescore.out.g87_10_bed00_g87_26
-}
+ChIP_Module_ChIP_MACS3(g_2_0_g87_9,g87_6_bam_file01_g87_9.collect(),g87_6_name12_g87_9.unique().flatten())
+g87_9_compare_bed00_g87_12 = ChIP_Module_ChIP_MACS3.out.g87_9_compare_bed00_g87_12
+g87_9_bedFile10_g87_11 = ChIP_Module_ChIP_MACS3.out.g87_9_bedFile10_g87_11
+(g87_9_bedFile14_g_99,g87_9_bedFile10_g95_2,g87_9_bedFile11_g95_5) = [g87_9_bedFile10_g87_11,g87_9_bedFile10_g87_11,g87_9_bedFile10_g87_11]
+g87_9_bam_file22_g87_12 = ChIP_Module_ChIP_MACS3.out.g87_9_bam_file22_g87_12
+(g87_9_bam_file26_g_99,g87_9_bam_file21_g74_131,g87_9_bam_file20_g74_142,g87_9_bam_file20_g74_134,g87_9_bam_file20_g74_121) = [g87_9_bam_file22_g87_12,g87_9_bam_file22_g87_12,g87_9_bam_file22_g87_12,g87_9_bam_file22_g87_12,g87_9_bam_file22_g87_12]
+g87_9_resultsdir310_g_70 = ChIP_Module_ChIP_MACS3.out.g87_9_resultsdir310_g_70
 
 
 BAM_Analysis_Module_Picard(g87_9_bam_file20_g74_121)
@@ -3989,31 +4135,65 @@ g74_82_outputFilePdf11 = BAM_Analysis_Module_Picard_Summary.out.g74_82_outputFil
 
 
 BAM_Analysis_Module_RSeQC(g87_9_bam_file20_g74_134,g78_54_bed31_g74_134)
-g74_134_outputFileOut08_g_70 = BAM_Analysis_Module_RSeQC.out.g74_134_outputFileOut08_g_70
-
-
-MultiQC(g71_28_FastQCout04_g_70.flatten().toList(),g74_134_outputFileOut08_g_70.flatten().toList(),g73_3_bowfiles312_g_70.flatten().toList())
-g_70_outputHTML00 = MultiQC.out.g_70_outputHTML00
+g74_134_outputFileOut011_g_70 = BAM_Analysis_Module_RSeQC.out.g74_134_outputFileOut011_g_70
 
 
 BAM_Analysis_Module_UCSC_BAM2BigWig_converter(g87_9_bam_file20_g74_142,g78_54_genomeSizes21_g74_142)
-g74_142_outputFileBw00 = BAM_Analysis_Module_UCSC_BAM2BigWig_converter.out.g74_142_outputFileBw00
+g74_142_bigWig_tuple00_g_109 = BAM_Analysis_Module_UCSC_BAM2BigWig_converter.out.g74_142_bigWig_tuple00_g_109
+(g74_142_bigWig_tuple00_g107_2) = [g74_142_bigWig_tuple00_g_109]
+
+
+tuple_to_file_for_bigwig(g74_142_bigWig_tuple00_g_109)
+g_109_bigWig_file03_g_99 = tuple_to_file_for_bigwig.out.g_109_bigWig_file03_g_99
 
 
 BAM_Analysis_Module_IGV_BAM2TDF_converter(g_2_0_g74_131,g87_9_bam_file21_g74_131,g78_54_genomeSizes22_g74_131)
 g74_131_outputFileOut00 = BAM_Analysis_Module_IGV_BAM2TDF_converter.out.g74_131_outputFileOut00
 
 
-ChIP_Module_bed_merge(g87_10_bed00_g87_26.collect(),g78_54_genomeSizes21_g87_26)
-g87_26_bed01_g87_27 = ChIP_Module_bed_merge.out.g87_26_bed01_g87_27
+MultiQC(g71_28_FastQCout04_g_70.flatten().toList(),g87_9_resultsdir310_g_70.flatten().toList(),g74_134_outputFileOut011_g_70.flatten().toList(),g73_3_bowfiles312_g_70.flatten().toList(),g71_31_FastQCout015_g_70.flatten().toList())
+g_70_outputHTML00 = MultiQC.out.g_70_outputHTML00
 
 
-ChIP_Module_bedtools_coverage(g87_9_compare_bed00_g87_27,g87_26_bed01_g87_27,g87_9_bam_file22_g87_27)
-g87_27_outputFileTxt00_g87_13 = ChIP_Module_bedtools_coverage.out.g87_27_outputFileTxt00_g87_13
+ChIP_Module_bed_merge(g87_9_bedFile10_g87_11.collect{ file -> return file[1] }.collect(),g78_54_genomeSizes21_g87_11)
+g87_11_bed01_g87_12 = ChIP_Module_bed_merge.out.g87_11_bed01_g87_12
 
 
-ChIP_Module_ATAC_CHIP_summary(g87_27_outputFileTxt00_g87_13.collect())
+ChIP_Module_bedtools_coverage(g87_9_compare_bed00_g87_12,g87_11_bed01_g87_12,g87_9_bam_file22_g87_12)
+g87_12_outputFileTxt00_g87_13 = ChIP_Module_bedtools_coverage.out.g87_12_outputFileTxt00_g87_13
+
+
+ChIP_Module_ATAC_CHIP_summary(g87_12_outputFileTxt00_g87_13.collect())
 g87_13_outputFile00 = ChIP_Module_ATAC_CHIP_summary.out.g87_13_outputFile00
+
+
+HOMER_Module_HOMER_Annotate_Peaks(g87_9_bedFile10_g95_2,g_96_1_g95_2)
+g95_2_inputFileTxt02_g_99 = HOMER_Module_HOMER_Annotate_Peaks.out.g95_2_inputFileTxt02_g_99
+
+
+HOMER_Module_HOMER_Motif_Finder(g_96_0_g95_5,g87_9_bedFile11_g95_5)
+g95_5_outputDir01_g_99 = HOMER_Module_HOMER_Motif_Finder.out.g95_5_outputDir01_g_99
+
+
+deepTools_Plot_Heatmap_deepTools_CreateMatrix(g74_142_bigWig_tuple00_g107_2,g78_54_bed31_g107_2)
+g107_2_zipped_file00_g107_1 = deepTools_Plot_Heatmap_deepTools_CreateMatrix.out.g107_2_zipped_file00_g107_1
+
+
+deepTools_Plot_Heatmap_deepTools_PlotHeatmap(g107_2_zipped_file00_g107_1)
+g107_1_png07_g_99 = deepTools_Plot_Heatmap_deepTools_PlotHeatmap.out.g107_1_png07_g_99
+
+g71_28_FastQCout00_g_99= g71_28_FastQCout00_g_99.ifEmpty(ch_empty_file_1) 
+g95_5_outputDir01_g_99= g95_5_outputDir01_g_99.ifEmpty(ch_empty_file_2) 
+g95_2_inputFileTxt02_g_99= g95_2_inputFileTxt02_g_99.ifEmpty(ch_empty_file_3) 
+g_109_bigWig_file03_g_99= g_109_bigWig_file03_g_99.ifEmpty(ch_empty_file_4) 
+g87_9_bedFile14_g_99= g87_9_bedFile14_g_99.ifEmpty(ch_empty_file_5) 
+g71_31_FastQCout05_g_99= g71_31_FastQCout05_g_99.ifEmpty(ch_empty_file_6) 
+g87_9_bam_file26_g_99= g87_9_bam_file26_g_99.ifEmpty(ch_empty_file_7) 
+g107_1_png07_g_99= g107_1_png07_g_99.ifEmpty(ch_empty_file_8) 
+
+
+ChIP_seq_Reporting(g71_28_FastQCout00_g_99.collect(),g95_5_outputDir01_g_99.collect(),g95_2_inputFileTxt02_g_99.collect(),g_109_bigWig_file03_g_99.collect(),g87_9_bedFile14_g_99.map{ file -> return file[1] }.collect(),g71_31_FastQCout05_g_99.collect(),g87_9_bam_file26_g_99.map{ file -> return file[1] }.collect(),g107_1_png07_g_99.collect(),g_102_8_g_99,g_103_9_g_99,g_108_10_g_99,g_75_outputFileTSV011_g_99)
+g_99_outputFileHTML00 = ChIP_seq_Reporting.out.g_99_outputFileHTML00
 
 
 }

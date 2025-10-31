@@ -1,6 +1,6 @@
- [![DOI:10.1186/s12864-020-6714-x](https://zenodo.org/badge/DOI/10.1186/s12864-020-6714-x.svg)](https://doi.org/10.1186/s12864-020-6714-x)
+[![Static Badge](https://img.shields.io/badge/DOI-10.1186%2Fs12864--020--6714--x-blue?style=for-the-badge)](https://doi.org/10.1186/s12864-020-6714-x)
 
-ChIP-seq Pipeline maps reads with Bowtie2, removes duplicates with Picard or Samtools, calls ChIP peaks with MACS2 and finally creates count table for analysis.  
+ChIP-seq Pipeline maps reads with Bowtie2, removes duplicates with Picard or Samtools, calls ChIP peaks with MACS3 and finally creates count table for analysis.  
 
 #### Steps:
   1. For Quality Control, we use FastQC to create qc outputs. There are optional read quality filtering (trimmomatic), read quality trimming (trimmomatic), adapter removal (cutadapt) processes available.
@@ -13,8 +13,8 @@ ChIP-seq Pipeline maps reads with Bowtie2, removes duplicates with Picard or Sam
 
 #### Inputs:
 
-  - `Reads`
-  - `ChIP-prep section`: To enable peak calling, please click settings of `run_ChIP_MACS2` and enter your samples in the `Sample Definitions` section by right click and choosing <b>Insert reads Dataset Files</b> option as described below:
+  - `Reads`: First select the dataset.
+  - `Sample Definitions`: To enable peak calling, please click settings of **Run ChIP-seq MACS Peak Caller Module** and enter your samples in the `Sample Definitions` section by right click and choosing <b>Insert File names from collection</b> option as described below:
 	
 	There are three fields need to be entered for each sample: output-prefix, sample-prefix, and input-prefix. 
 
@@ -24,7 +24,7 @@ ChIP-seq Pipeline maps reads with Bowtie2, removes duplicates with Picard or Sam
 	| control-rep1  |  control-rep1 |                         |
 
 	* Output-Prefix: Output prefix of the sample. Final reports will be created by using this sample name. 
-	* Sample-Prefix: Sample name which is entered in the reads section.
+	* Sample-Prefix: Sample names which is entered in the reads section.
 	* Input-Prefix (optional):  If your experiment has background sample (input), you can specify its prefix in this section.
 
 #### Citation:
@@ -34,7 +34,7 @@ Yukselen, O., Turkyilmaz, O., Ozturk, A.R. et al. DolphinNext: a distributed dat
 
 
 #### Program Versions:
-  - Macs2 v2.1.2
+  - Macs3 v3.0.1
   - Bowtie2 v2.3.5
   - Bowtie v1.2.2
   - FastQC v0.11.8
