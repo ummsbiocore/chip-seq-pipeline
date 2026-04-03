@@ -328,7 +328,7 @@ output:
  tuple val(name), file("result/*.fastq.gz")  ,emit:g71_23_reads00_g71_19 
  path "${name}.*.log"  ,emit:g71_23_log_file10_g71_24 
 
-container 'quay.io/viascientific/fastq_preprocessing:1.0'
+container 'quay.io/ummsbiocore/fastq_preprocessing:1.0'
 
 when:
 params.run_UMIextract == "yes" 
@@ -1032,7 +1032,7 @@ output:
  path "${newNameFasta}"  ,emit:g78_21_genome00_g78_58 
  path "${newNameGtf}"  ,emit:g78_21_gtfFile10_g78_57 
 
-container 'quay.io/viascientific/pipeline_base_image:1.0'
+container 'quay.io/ummsbiocore/pipeline_base_image:1.0'
 
 when:
 params.run_Download_Genomic_Sources == "yes"
@@ -1249,7 +1249,7 @@ input:
 output:
  path "${gtfName}.bed"  ,emit:g78_53_bed03_g78_54 
 
-container "${ params.IMAGE_BASE ? "${params.IMAGE_BASE}/rnaseq:4.0" : "quay.io/viascientific/rnaseq:4.0" }"
+container "${ params.IMAGE_BASE ? "${params.IMAGE_BASE}/rnaseq:4.0" : "quay.io/ummsbiocore/rnaseq:4.0" }"
 
 when:
 params.run_Download_Genomic_Sources == "yes"
@@ -1336,7 +1336,7 @@ output:
  path "*/${genomeSizes2}" ,optional:true  ,emit:g78_54_genomeSizes22_g74_131 
  path "*/${bed2}" ,optional:true  ,emit:g78_54_bed31_g74_134 
 
-container 'quay.io/viascientific/pipeline_base_image:1.0'
+container 'quay.io/ummsbiocore/pipeline_base_image:1.0'
 stageInMode 'copy'
 
 script:
@@ -1404,7 +1404,7 @@ input:
 output:
  path "*/${bowtie2new}" ,optional:true  ,emit:g73_14_bowtie2index02_g73_3 
 
-container 'quay.io/viascientific/pipeline_base_image:1.0'
+container 'quay.io/ummsbiocore/pipeline_base_image:1.0'
 stageInMode 'copy'
 
 when:
@@ -1561,7 +1561,7 @@ output:
  path "*/${bowtie2Index2}" ,optional:true  ,emit:g72_43_bowtie2index23_g72_44 
  path "*/${starIndex2}" ,optional:true  ,emit:g72_43_starIndex34_g72_44 
 
-container 'quay.io/viascientific/pipeline_base_image:1.0'
+container 'quay.io/ummsbiocore/pipeline_base_image:1.0'
 stageInMode 'copy'
 
 when:
@@ -3007,7 +3007,7 @@ output:
  tuple val(name), file("${name}*")  ,emit:g87_1_publish11 
  path "*_duplicates_stats.log" ,optional:true  ,emit:g87_1_log_file22 
 
-container 'quay.io/viascientific/picard:1.0'
+container 'quay.io/ummsbiocore/picard:1.0'
 
 when:
 (params.run_Picard_MarkDuplicates && (params.run_Picard_MarkDuplicates == "yes")) || !params.run_Picard_MarkDuplicates     
@@ -3076,7 +3076,7 @@ output:
  tuple val(name), file("bam/*.bam")  ,emit:g87_9_bam_file22_g87_12 
  path "${name}*"  ,emit:g87_9_resultsdir310_g_70 
 
-container "quay.io/viascientific/macs3-samtools:1.0.2"
+container "quay.io/ummsbiocore/macs3-samtools:1.0.2"
 
 script:
 genomeSizeText = ""
@@ -3156,7 +3156,7 @@ output:
  path "*_metrics"  ,emit:g74_121_outputFileOut00_g74_82 
  path "results/*.pdf"  ,emit:g74_121_outputFilePdf12_g74_82 
 
-container 'quay.io/viascientific/picard:1.0'
+container 'quay.io/ummsbiocore/picard:1.0'
 
 when:
 (params.run_Picard_CollectMultipleMetrics && (params.run_Picard_CollectMultipleMetrics == "yes")) || !params.run_Picard_CollectMultipleMetrics
@@ -3584,7 +3584,7 @@ input:
 output:
  path "${name}_annotated_peaks.txt"  ,emit:g95_2_inputFileTxt02_g_99 
 
-container "quay.io/viascientific/homer:5.1"
+container "quay.io/ummsbiocore/homer:5.1"
 stageInMode = 'copy'
 
 when:
@@ -3623,7 +3623,7 @@ output:
  path "${name}_motifs"  ,emit:g95_5_outputDir01_g_99 
 
 stageInMode = 'copy'
-container "quay.io/viascientific/homer:5.1"
+container "quay.io/ummsbiocore/homer:5.1"
 
 
 when:
@@ -3777,7 +3777,7 @@ input:
 output:
  path "*.html"  ,emit:g_99_outputFileHTML00 
 
-container "quay.io/viascientific/chip-atac-report:1.0"
+container "quay.io/ummsbiocore/chip-atac-report:1.0"
 
 when:
 !params.create_report || params.create_report == "yes"
